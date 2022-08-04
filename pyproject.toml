@@ -6,7 +6,7 @@ authors = ["Aolin <aolinz@outlook.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-request = "^2.27.1"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
