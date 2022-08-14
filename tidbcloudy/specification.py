@@ -532,7 +532,7 @@ class CreateClusterConfig:
 
     def to_object(self) -> dict:
         return {
-            "name": self._name,
+            "name": self._name if self._name is not None else "",
             "cluster_type": self._cluster_type,
             "cloud_provider": self._cloud_provider,
             "region": self._region,

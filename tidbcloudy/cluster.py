@@ -204,7 +204,7 @@ class Cluster:
         """
         Backup(self._context, backup_id, cluster_id=self._id, project_id=self._project_id).delete()
 
-    def iter_backup(self, *, page_size: int = 10) -> Iterator[Backup]:
+    def iter_backups(self, *, page_size: int = 10) -> Iterator[Backup]:
         """
         This is not a TiDB Cloud official endpoint.
         Iterate all backups of the cluster.
@@ -243,7 +243,9 @@ class Cluster:
             query["page_size"] = page_size
         resp = self._context.call_get(path=path, params=query)
         return Page(
-            [Backup.from_object(self._context, {"cluster_id": self._id, "project_id": self._project_id, **backup}) for backup in resp["items"]],
+            [Backup.from_object(
+                self._context, {"cluster_id": self._id, "project_id": self._project_id, **backup}
+            ) for backup in resp["items"]],
             page, page_size, resp["total"]
         )
 
@@ -259,7 +261,7 @@ class Cluster:
         """
         path = "projects/{}/clusters/{}/backups/{}".format(self._project_id, self._id, backup_id)
         resp = self._context.call_get(path=path)
-        return Backup.from_object(self._context, resp, cluster_id=self._id)
+        return Backup.from_object(self._context, {"cluster_id": self._id, "project_id": self._project_id, **resp})
 
     def connect(self, type: str, database: str, password: str):
         connection_strings = self.status.connection_strings.to_object()
