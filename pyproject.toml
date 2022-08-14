@@ -2,6 +2,7 @@
 name = "tidbcloudy"
 version = "0.2.1"
 description = ""
+readme = "README.md"
 authors = ["Aolin <aolinz@outlook.com>"]
 
 [tool.poetry.dependencies]
