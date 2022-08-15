@@ -10,6 +10,8 @@
 pip install tidbcloudy
 ```
 
+Make sure that you have mysql client installed in your environment. For more information, see [PyMySQL/mysqlclient](https://github.com/PyMySQL/mysqlclient#install).
+
 ## Usage
 
 ### List all resources in your organization
