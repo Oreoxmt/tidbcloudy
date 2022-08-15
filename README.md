@@ -2,7 +2,7 @@
 
 ## Introduction
 
-`tidbcloudy` is a Python package that provides a high-level interface to access TiDB Cloud. For more information about TiDB Cloud API, see [TiDB Cloud API Documentation](https://docs.pingcap.com/tidbcloud/api/v1beta).
+`tidbcloudy` is a Python package that provides a high-level interface to access [TiDB Cloud](https://tidbcloud.com). For more information about TiDB Cloud API, see [TiDB Cloud API Documentation](https://docs.pingcap.com/tidbcloud/api/v1beta).
 
 ## Installation
 
