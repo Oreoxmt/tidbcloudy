@@ -2,119 +2,29 @@ import time
 import MySQLdb
 from typing import Union, Iterator
 
-from tidbcloudy.specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
+from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
     ClusterStatus
-from tidbcloudy.context import Context
-from tidbcloudy.backup import Backup
-from tidbcloudy.util.log import log
-from tidbcloudy.util.timestamp import timestamp_to_string
-from tidbcloudy.util.page import Page
+from .backup import Backup
+from .util.log import log
+from .util.timestamp import timestamp_to_string
+from .util.page import Page
 
 
 # noinspection PyShadowingBuiltins
-class Cluster:
-    def __init__(self,
-                 context: Context,
-                 id: str = None,
-                 *,
-                 project_id: str = None,
-                 name: str = None,
-                 cluster_type: ClusterType = None,
-                 cloud_provider: CloudProvider = None,
-                 region: str = None,
-                 create_timestamp: int = None,
-                 config: ClusterConfig = None,
-                 status: ClusterInfo = None,
-                 _from: str = None
-                 ):
-        """
-        Create a Cluster instance.
-        Args:
-            context: Context object.
-            id: the id of the cluster.
-            project_id: the id of the project.````
-            name: the name of the cluster.````
-            cluster_type: the type of the cluster.
-            cloud_provider: the cloud provider of the cluster.
-            region: the region of the cluster.
-            create_timestamp: the timestamp of the cluster creation.
-            config: the config of the cluster.
-            status: the status of the cluster.
-            _from: internal use.
-        """
-        if _from is None:
-            if id is None:
-                raise TypeError("id")
-            if project_id is None:
-                raise TypeError("project_id")
-            if name is None:
-                raise TypeError("name")
-            if cluster_type is None:
-                raise TypeError("cluster_type")
-            if cloud_provider is None:
-                raise TypeError("cloud_provider")
-            if region is None:
-                raise TypeError("region")
-            if config is None:
-                raise TypeError("config")
-        elif _from == "object":
-            # When init a cluster instance from object, automatically assign the context and id as None
-            pass
-        elif _from == "create" or _from == "dummy":
-            # When init a cluster instance from Project().create_cluster endpoint,
-            # the context, id and project_id are required
-            if id is None:
-                raise TypeError("id")
-            if project_id is None:
-                raise TypeError("project_id")
-        self._context = context
-        self._id = id
-        self._project_id = project_id
-        self._name = name
-        self._cluster_type = cluster_type
-        self._cloud_provider = cloud_provider
-        self._region = region
-        self._create_timestamp = create_timestamp
-        self._config = config
-        self._status = status
+class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
+    __slots__ = ["_id", "_project_id", "_name", "_cluster_type", "_cloud_provider", "_region", "_create_timestamp",
+                 "_config", "_status"]
 
-    def assign_object(self, obj: dict):
-        self._id = obj["id"]
-        self._project_id = obj["project_id"]
-        self._name = obj["name"]
-        self._cluster_type = obj["cluster_type"]
-        self._cloud_provider = obj["cloud_provider"]
-        self._region = obj["region"]
-        self._create_timestamp = int(obj["create_timestamp"])
-        self._config = ClusterConfig.from_object(obj["config"])
-        self._status = ClusterInfo.from_object(obj["status"])
-
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def connection_strings(self):
-        return self.status.connection_strings
-
-    @classmethod
-    def from_object(cls, context: Context, obj: dict):
-        new_cluster = cls(context, _from="object")
-        new_cluster.assign_object(obj)
-        return new_cluster
-
-    def to_object(self) -> dict:
-        return {
-            "id": self._id,
-            "project_id": self._project_id,
-            "name": self._name,
-            "cluster_type": self._cluster_type,
-            "cloud_provider": self._cloud_provider,
-            "region": self._region,
-            "create_timestamp": self._create_timestamp,
-            "config": self._config.to_object(),
-            "status": self._status.to_object()
-        }
+    id: str = TiDBCloudyField(str)
+    project_id: str = TiDBCloudyField(str)
+    name: str = TiDBCloudyField(str)
+    cluster_type: ClusterType = TiDBCloudyField(ClusterType)
+    cloud_provider: CloudProvider = TiDBCloudyField(CloudProvider)
+    region: str = TiDBCloudyField(str)
+    create_timestamp: int = TiDBCloudyField(int, convert_from=int, convert_to=str)
+    config: ClusterConfig = TiDBCloudyField(ClusterConfig)
+    status: ClusterInfo = TiDBCloudyField(ClusterInfo)
 
     def _update_info_from_server(self):
         path = "projects/{}/clusters/{}".format(self._project_id, self._id)
@@ -202,7 +112,7 @@ class Cluster:
             The response of the API.
 
         """
-        Backup(self._context, backup_id, cluster_id=self._id, project_id=self._project_id).delete()
+        Backup(context=self._context, backup_id=backup_id, cluster_id=self._id, project_id=self._project_id).delete()
 
     def iter_backups(self, *, page_size: int = 10) -> Iterator[Backup]:
         """
@@ -281,7 +191,3 @@ class Cluster:
             return "<Cluster id={} name={} type={} create_at={}>".format(
                 self._id, self._name, self._cluster_type,
                 timestamp_to_string(self._create_timestamp))
-
-    @property
-    def id(self):
-        return self._id
