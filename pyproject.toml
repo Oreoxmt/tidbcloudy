@@ -9,6 +9,7 @@ authors = ["Aolin <aolinz@outlook.com>"]
 python = "^3.7"
 requests = "^2.27.1"
 mysqlclient = "^2.1.1"
+deprecation = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

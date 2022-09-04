@@ -11,6 +11,10 @@ class TiDBCloudyContextualBase:
         self._context = context
         super().__init__(**kwargs)
 
+    @property
+    def context(self):
+        return self._context
+
 
 class TiDBCloudyBase:
     _keys = None
