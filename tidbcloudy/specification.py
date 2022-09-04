@@ -16,11 +16,14 @@ class CloudProvider(Enum):
 
 
 class ClusterStatus(Enum):
+    INITIALIZING = "INITIALIZING"
     AVAILABLE = "AVAILABLE"
     CREATING = "CREATING"
     MODIFYING = "MODIFYING"
     PAUSED = "PAUSED"
     RESUMING = "RESUMING"
+    UNAVAILABLE = "UNAVAILABLE"
+    IMPORTING = "IMPORTING"
     CLEARED = "CLEARED"
 
 
@@ -190,7 +193,7 @@ class ClusterConfig(TiDBCloudyBase):
     ip_access_list: List[IPAccessList] = TiDBCloudyListField(IPAccessList)
 
     def __repr__(self):
-        return "<ClusterConfig port={} components={}>".format(self._port, self._components)
+        return "<ClusterConfig port={} components={}>".format(self.port, self.components)
 
 
 class CreateClusterConfig:
@@ -340,8 +343,10 @@ class ClusterInfo(TiDBCloudyBase):
     connection_strings: ConnectionStrings = TiDBCloudyField(ConnectionStrings)
 
     def __repr__(self):
-        return "<tidb={} status= {} default user={}>".format(self._tidb_version, self._cluster_status,
-                                                             self._connection_strings.default_user)
+        return "<tidb={} status= {} default user={}>".format(
+            self.tidb_version,
+            self.cluster_status.value if self.cluster_status is not None else None,
+            self.connection_strings.default_user)
 
 
 # noinspection PyShadowingBuiltins
@@ -352,7 +357,8 @@ class ClusterInfoOfRestore(TiDBCloudyBase):
     status: ClusterStatus = TiDBCloudyField(ClusterStatus)
 
     def __repr__(self):
-        return "<id={}, name={}, status={}>".format(self._id, self._name, self._status)
+        return "<id={}, name={}, status={}>".format(self.id, self.name,
+                                                    self.status.value if self.status is not None else None)
 
 
 class CloudSpecification(TiDBCloudyBase):
@@ -365,7 +371,7 @@ class CloudSpecification(TiDBCloudyBase):
     tiflash: List[TiFlashProfile] = TiDBCloudyListField(TiFlashProfile)
 
     def __repr__(self):
-        return "<Specification cluster_type={} cloud_provider={} region={}>".format(self.cluster_type,
-                                                                                    self.cloud_provider,
-                                                                                    self.region)
-
+        return "<Specification cluster_type={} cloud_provider={} region={}>".format(
+            self.cluster_type.value if self.cluster_type is not None else None,
+            self.cloud_provider.value if self.cloud_provider is not None else None,
+            self.region)
