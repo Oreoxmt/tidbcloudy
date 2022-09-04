@@ -1,59 +1,22 @@
 from typing import Union, Iterator
 
-from tidbcloudy.context import Context
-from tidbcloudy.cluster import Cluster
-from tidbcloudy.restore import Restore
-from tidbcloudy.specification import CreateClusterConfig, UpdateClusterConfig
-from tidbcloudy.util.timestamp import timestamp_to_string
-from tidbcloudy.util.page import Page
+from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from .cluster import Cluster
+from .restore import Restore
+from .specification import CreateClusterConfig, UpdateClusterConfig
+from .util.timestamp import timestamp_to_string
+from .util.page import Page
 
 
 # noinspection PyShadowingBuiltins
-class Project:
-    def __init__(self,
-                 context: Context,
-                 id: str = None,
-                 *,
-                 org_id: str = None,
-                 name: str = None,
-                 cluster_count: int = None,
-                 user_count: int = None,
-                 create_timestamp: int = None):
-        self._context = context
-        self._id = id
-        self._org_id = org_id
-        self._name = name
-        self._cluster_count = cluster_count
-        self._user_count = user_count
-        self._create_timestamp = create_timestamp
-
-    @property
-    def id(self):
-        return self._id
-
-    def _assign_from_object(self, obj: dict):
-        self._id = obj["id"]
-        self._org_id = obj["org_id"]
-        self._name = obj["name"]
-        self._cluster_count = obj["cluster_count"]
-        self._user_count = obj["user_count"]
-        self._create_timestamp = int(obj["create_timestamp"])
-
-    def to_object(self) -> dict:
-        return {
-            "id": self._id,
-            "org_id": self._org_id,
-            "name": self._name,
-            "cluster_count": self._cluster_count,
-            "user_count": self._user_count,
-            "create_timestamp": self._create_timestamp,
-        }
-
-    @classmethod
-    def from_object(cls, context: Context, obj: dict):
-        new_project = cls(context)
-        new_project._assign_from_object(obj)
-        return new_project
+class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
+    __slots__ = ["_id", "_org_id", "_name", "_cluster_count", "_user_count", "_create_timestamp"]
+    id: str = TiDBCloudyField(str)
+    org_id: str = TiDBCloudyField(str)
+    name: str = TiDBCloudyField(str)
+    cluster_count: int = TiDBCloudyField(int)
+    user_count: int = TiDBCloudyField(int)
+    create_timestamp: int = TiDBCloudyField(int, convert_from=int, convert_to=str)
 
     def create_cluster(self, config: Union[CreateClusterConfig, dict]) -> Cluster:
         """
@@ -86,9 +49,9 @@ class Project:
         """
         if isinstance(config, CreateClusterConfig):
             config = config.to_object()
-        path = "projects/{}/clusters".format(self._id)
-        resp = self._context.call_post(path=path, json=config)
-        return Cluster(self._context, id=resp["id"], project_id=self._id, _from="create")
+        path = "projects/{}/clusters".format(self.id)
+        resp = self.context.call_post(path=path, json=config)
+        return Cluster(context=self.context, id=resp["id"], project_id=self.id)
 
     def update_cluster(self, cluster_id: str, config: Union[UpdateClusterConfig, dict]):
         """
@@ -110,7 +73,7 @@ class Project:
                 new_cluster_config.update_component("tidb", 1).update_component("tikv", 1)
                 new_cluster = project.update_cluster(cluster_id=cluster._id, config=new_config.to_object())
         """
-        Cluster(self._context, id=cluster_id, project_id=self._id, _from="dummy").update(config)
+        Cluster(context=self.context, id=cluster_id, project_id=self.id).update(config)
 
     def delete_cluster(self, cluster_id: str):
         """
@@ -128,7 +91,7 @@ class Project:
                 project = api.get_project(project_id)
                 project.delete_cluster(cluster_id)
         """
-        Cluster(self._context, id=cluster_id, project_id=self._id, _from="dummy").delete()
+        Cluster(context=self.context, id=cluster_id, project_id=self.id).delete()
 
     def get_cluster(self, cluster_id: str) -> Cluster:
         """
@@ -147,9 +110,9 @@ class Project:
                 cluster = project.get_cluster(cluster_id)
 
         """
-        path = "projects/{}/clusters/{}".format(self._id, cluster_id)
-        resp = self._context.call_get(path=path)
-        return Cluster.from_object(self._context, resp)
+        path = "projects/{}/clusters/{}".format(self.id, cluster_id)
+        resp = self.context.call_get(path=path)
+        return Cluster.from_object(self.context, resp)
 
     def iter_clusters(self, page_size: int = 10) -> Iterator[Cluster]:
         """
@@ -198,15 +161,15 @@ class Project:
                     print(cluster) # This is a Cluster instance.
 
         """
-        path = "projects/{}/clusters".format(self._id)
+        path = "projects/{}/clusters".format(self.id)
         query = {}
         if page is not None:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path=path, params=query)
+        resp = self.context.call_get(path=path, params=query)
         return Page(
-            [Cluster.from_object(self._context, item) for item in resp["items"]],
+            [Cluster.from_object(self.context, item) for item in resp["items"]],
             page, page_size, resp["total"])
 
     def create_restore(self, *, name: str, backup_id: str, cluster_config: Union[CreateClusterConfig, dict]) -> Restore:
@@ -220,7 +183,7 @@ class Project:
         Returns:
 
         """
-        path = "projects/{}/restores".format(self._id)
+        path = "projects/{}/restores".format(self.id)
         if isinstance(cluster_config, CreateClusterConfig):
             cluster_config = cluster_config.to_object()
         create_config = {
@@ -228,8 +191,8 @@ class Project:
             "backup_id": backup_id,
             "config": cluster_config["config"]
         }
-        resp = self._context.call_post(path=path, json=create_config)
-        return Restore(self._context, id=resp["id"], cluster_id=resp["cluster_id"])
+        resp = self.context.call_post(path=path, json=create_config)
+        return Restore(context=self.context, id=resp["id"], cluster_id=resp["cluster_id"])
 
     def get_restore(self, restore_id: str) -> Restore:
         """
@@ -240,9 +203,9 @@ class Project:
         Returns:
 
         """
-        path = "projects/{}/restores/{}".format(self._id, restore_id)
-        resp = self._context.call_get(path=path)
-        return Restore.from_object(self._context, resp)
+        path = "projects/{}/restores/{}".format(self.id, restore_id)
+        resp = self.context.call_get(path=path)
+        return Restore.from_object(self.context, resp)
 
     def list_restores(self, *, page: int = None, page_size: int = None) -> Page[Restore]:
         """
@@ -254,15 +217,15 @@ class Project:
         Returns:
 
         """
-        path = "projects/{}/restores".format(self._id)
+        path = "projects/{}/restores".format(self.id)
         query = {}
         if page is not None:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path=path, params=query)
+        resp = self.context.call_get(path=path, params=query)
         return Page(
-            [Restore.from_object(self._context, item) for item in resp["items"]],
+            [Restore.from_object(self.context, item) for item in resp["items"]],
             page, page_size, resp["total"]
         )
 
@@ -287,4 +250,4 @@ class Project:
 
     def __repr__(self):
         return "<Project id={} name={} create_at={}>".format(
-            self._id, self._name, timestamp_to_string(self._create_timestamp))
+            self.id, self.name, timestamp_to_string(self.create_timestamp))

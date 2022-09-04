@@ -1,127 +1,38 @@
 import time
+import deprecation
 import MySQLdb
 from typing import Union, Iterator
 
-from tidbcloudy.specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
+from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
     ClusterStatus
-from tidbcloudy.context import Context
-from tidbcloudy.backup import Backup
-from tidbcloudy.util.log import log
-from tidbcloudy.util.timestamp import timestamp_to_string
-from tidbcloudy.util.page import Page
+from .backup import Backup
+from .util.log import log
+from .util.timestamp import timestamp_to_string
+from .util.page import Page
 
 
 # noinspection PyShadowingBuiltins
-class Cluster:
-    def __init__(self,
-                 context: Context,
-                 id: str = None,
-                 *,
-                 project_id: str = None,
-                 name: str = None,
-                 cluster_type: ClusterType = None,
-                 cloud_provider: CloudProvider = None,
-                 region: str = None,
-                 create_timestamp: int = None,
-                 config: ClusterConfig = None,
-                 status: ClusterInfo = None,
-                 _from: str = None
-                 ):
-        """
-        Create a Cluster instance.
-        Args:
-            context: Context object.
-            id: the id of the cluster.
-            project_id: the id of the project.````
-            name: the name of the cluster.````
-            cluster_type: the type of the cluster.
-            cloud_provider: the cloud provider of the cluster.
-            region: the region of the cluster.
-            create_timestamp: the timestamp of the cluster creation.
-            config: the config of the cluster.
-            status: the status of the cluster.
-            _from: internal use.
-        """
-        if _from is None:
-            if id is None:
-                raise TypeError("id")
-            if project_id is None:
-                raise TypeError("project_id")
-            if name is None:
-                raise TypeError("name")
-            if cluster_type is None:
-                raise TypeError("cluster_type")
-            if cloud_provider is None:
-                raise TypeError("cloud_provider")
-            if region is None:
-                raise TypeError("region")
-            if config is None:
-                raise TypeError("config")
-        elif _from == "object":
-            # When init a cluster instance from object, automatically assign the context and id as None
-            pass
-        elif _from == "create" or _from == "dummy":
-            # When init a cluster instance from Project().create_cluster endpoint,
-            # the context, id and project_id are required
-            if id is None:
-                raise TypeError("id")
-            if project_id is None:
-                raise TypeError("project_id")
-        self._context = context
-        self._id = id
-        self._project_id = project_id
-        self._name = name
-        self._cluster_type = cluster_type
-        self._cloud_provider = cloud_provider
-        self._region = region
-        self._create_timestamp = create_timestamp
-        self._config = config
-        self._status = status
+class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
+    __slots__ = ["_id", "_project_id", "_name", "_cluster_type", "_cloud_provider", "_region", "_create_timestamp",
+                 "_config", "_status"]
 
-    def assign_object(self, obj: dict):
-        self._id = obj["id"]
-        self._project_id = obj["project_id"]
-        self._name = obj["name"]
-        self._cluster_type = obj["cluster_type"]
-        self._cloud_provider = obj["cloud_provider"]
-        self._region = obj["region"]
-        self._create_timestamp = int(obj["create_timestamp"])
-        self._config = ClusterConfig.from_object(obj["config"])
-        self._status = ClusterInfo.from_object(obj["status"])
-
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def connection_strings(self):
-        return self.status.connection_strings
-
-    @classmethod
-    def from_object(cls, context: Context, obj: dict):
-        new_cluster = cls(context, _from="object")
-        new_cluster.assign_object(obj)
-        return new_cluster
-
-    def to_object(self) -> dict:
-        return {
-            "id": self._id,
-            "project_id": self._project_id,
-            "name": self._name,
-            "cluster_type": self._cluster_type,
-            "cloud_provider": self._cloud_provider,
-            "region": self._region,
-            "create_timestamp": self._create_timestamp,
-            "config": self._config.to_object(),
-            "status": self._status.to_object()
-        }
+    id: str = TiDBCloudyField(str)
+    project_id: str = TiDBCloudyField(str)
+    name: str = TiDBCloudyField(str)
+    cluster_type: ClusterType = TiDBCloudyField(ClusterType)
+    cloud_provider: CloudProvider = TiDBCloudyField(CloudProvider)
+    region: str = TiDBCloudyField(str)
+    create_timestamp: int = TiDBCloudyField(int, convert_from=int, convert_to=str)
+    config: ClusterConfig = TiDBCloudyField(ClusterConfig)
+    status: ClusterInfo = TiDBCloudyField(ClusterInfo)
 
     def _update_info_from_server(self):
-        path = "projects/{}/clusters/{}".format(self._project_id, self._id)
-        resp = self._context.call_get(path=path)
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        resp = self.context.call_get(path=path)
         self.assign_object(resp)
 
-    def wait_for_ready(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
+    def wait_for_available(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
         """
         Wait for cluster to be ready.
         Args:
@@ -142,35 +53,62 @@ class Cluster:
             cluster = project.create_cluster(cluster_config)
             cluster.wait_for_ready()
         """
-        create_start = time.monotonic()
+        time_start = time.monotonic()
         counter = 1
+        log("Cluster id={} is {}".format(self.id, self.status.cluster_status.value))
         while True:
-            duration = time.monotonic() - create_start
+            duration = time.monotonic() - time_start
             minutes = duration - 60 * counter
             if timeout_sec is not None and duration > timeout_sec:
                 return False
             elif minutes > 0:
                 counter += 1
-                log("Waiting for cluster {} to be ready, {} seconds passed...".format(self._id, int(duration)))
+                log("Waiting for cluster {} to be ready, {} seconds passed...".format(self.id, int(duration)))
             self._update_info_from_server()
-            if self._status.cluster_status == ClusterStatus.AVAILABLE:
-                log("Cluster id={} is available".format(self._id))
+            if self.status.cluster_status == ClusterStatus.AVAILABLE:
+                log("Cluster id={} is {}".format(self.id, self.status.cluster_status.value))
                 return True
             time.sleep(interval_sec)
 
+    @deprecation.deprecated(details="Use wait_for_available instead")
+    def wait_for_ready(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
+        return self.wait_for_available(timeout_sec=timeout_sec, interval_sec=interval_sec)
+
     def update(self, config: Union[UpdateClusterConfig, dict], update_from_server: bool = False):
-        path = "projects/{}/clusters/{}".format(self._project_id, self._id)
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
         if isinstance(config, UpdateClusterConfig):
             config = config.to_object()
-        self._context.call_patch(path=path, json=config)
-        log("Cluster id={} has been updated".format(self._id))
+        self.context.call_patch(path=path, json=config)
+        log("Cluster id={} has been updated".format(self.id))
         if update_from_server:
             self._update_info_from_server()
 
+    def pause(self):
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        config = {
+            "config": {
+                "paused": True
+            }
+        }
+        self.context.call_patch(path=path, json=config)
+        self._update_info_from_server()
+        log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
+
+    def resume(self):
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        config = {
+            "config": {
+                "paused": False
+            }
+        }
+        self.context.call_patch(path=path, json=config)
+        self._update_info_from_server()
+        log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
+
     def delete(self):
-        path = "projects/{}/clusters/{}".format(self._project_id, self._id)
-        self._context.call_delete(path=path)
-        log("Cluster id={} has been deleted".format(self._id))
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        self.context.call_delete(path=path)
+        log("Cluster id={} has been deleted".format(self.id))
 
     def create_backup(self, *, name: str, description: str = None) -> Backup:
         """
@@ -183,13 +121,13 @@ class Cluster:
             Backup instance.
 
         """
-        path = "projects/{}/clusters/{}/backups".format(self._project_id, self._id)
+        path = "projects/{}/clusters/{}/backups".format(self.project_id, self.id)
         config = {
             "name": name
         }
         if description is not None:
             config["description"] = description
-        resp = self._context.call_post(path=path, json=config)
+        resp = self.context.call_post(path=path, json=config)
         return self.get_backup(resp["id"])
 
     def delete_backup(self, backup_id: str):
@@ -202,7 +140,7 @@ class Cluster:
             The response of the API.
 
         """
-        Backup(self._context, backup_id, cluster_id=self._id, project_id=self._project_id).delete()
+        Backup(context=self.context, backup_id=backup_id, cluster_id=self.id, project_id=self.project_id).delete()
 
     def iter_backups(self, *, page_size: int = 10) -> Iterator[Backup]:
         """
@@ -235,16 +173,16 @@ class Cluster:
             The response of the API.
 
         """
-        path = "projects/{}/clusters/{}/backups".format(self._project_id, self._id)
+        path = "projects/{}/clusters/{}/backups".format(self.project_id, self.id)
         query = {}
         if page is not None:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path=path, params=query)
+        resp = self.context.call_get(path=path, params=query)
         return Page(
             [Backup.from_object(
-                self._context, {"cluster_id": self._id, "project_id": self._project_id, **backup}
+                self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup}
             ) for backup in resp["items"]],
             page, page_size, resp["total"]
         )
@@ -259,9 +197,9 @@ class Cluster:
             Backup instance.
 
         """
-        path = "projects/{}/clusters/{}/backups/{}".format(self._project_id, self._id, backup_id)
-        resp = self._context.call_get(path=path)
-        return Backup.from_object(self._context, {"cluster_id": self._id, "project_id": self._project_id, **resp})
+        path = "projects/{}/clusters/{}/backups/{}".format(self.project_id, self.id, backup_id)
+        resp = self.context.call_get(path=path)
+        return Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **resp})
 
     def connect(self, type: str, database: str, password: str):
         connection_strings = self.status.connection_strings.to_object()
@@ -275,13 +213,11 @@ class Cluster:
                                database=database)
 
     def __repr__(self):
-        if self._status == ClusterStatus.CREATING.value:
-            return "<Cluster id={} creating>".format(self._id)
+        if self.status.cluster_status == ClusterStatus.CREATING.value:
+            return "<Cluster id={} CREATING>".format(self.id)
+        elif self.cluster_type is None:
+            return "<Cluster id={} name={}>".format(self.id, self.name)
         else:
             return "<Cluster id={} name={} type={} create_at={}>".format(
-                self._id, self._name, self._cluster_type,
-                timestamp_to_string(self._create_timestamp))
-
-    @property
-    def id(self):
-        return self._id
+                self.id, self.name, self.cluster_type.value,
+                timestamp_to_string(self.create_timestamp))

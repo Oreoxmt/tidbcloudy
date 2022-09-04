@@ -27,11 +27,12 @@ class TiDBCloud:
                 api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
                 project = api.get_project("your_project_id", update_from_server=True)
         """
-        project = Project(self._context, project_id)
+        project = Project(context=self._context, id=project_id)
         if update_from_server:
             for item in self.iter_projects():
                 if item.id == project_id:
                     return item
+            raise ValueError("Project {} not found".format(project_id))
         return project
 
     def list_projects(self, page: int = None, page_size: int = None) -> Page[Project]:
@@ -106,4 +107,4 @@ class TiDBCloud:
 
         """
         resp = self._context.call_get(path="clusters/provider/regions")
-        return [CloudSpecification.from_object(item) for item in resp["items"]]
+        return [CloudSpecification.from_object(obj=item) for item in resp["items"]]
