@@ -32,9 +32,9 @@ class Backup(TiDBCloudyBase, TiDBCloudyContextualBase):
     """
 
     def delete(self):
-        path = "projects/{}/clusters/{}/backups/{}".format(self._project_id, self._cluster_id, self._id)
-        self._context.call_delete(path=path)
-        log("backup task id={} has been deleted".format(self._id))
+        path = "projects/{}/clusters/{}/backups/{}".format(self.project_id, self.cluster_id, self.id)
+        self.context.call_delete(path=path)
+        log("backup task id={} has been deleted".format(self.id))
 
     def __repr__(self):
-        return "<backup id={} name={} create_at= {}>".format(self._id, self._name, self._create_timestamp)
+        return "<backup id={} name={} create_at= {}>".format(self.id, self.name, self.create_timestamp)

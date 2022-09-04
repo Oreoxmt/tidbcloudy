@@ -14,5 +14,10 @@ class Restore(TiDBCloudyBase, TiDBCloudyContextualBase):
     error_message: str = TiDBCloudyField(str)
 
     def __repr__(self):
-        return "<restore id={} backup_id={} create_at= {} status={}>".format(self._id, self._backup_id,
-                                                                             self._create_timestamp, self._status)
+        if self.status is None:
+            return "<restore id={} backup_id={} create_at= {}>".format(self.id, self.backup_id,
+                                                                       self.create_timestamp)
+        else:
+            return "<restore id={} backup_id={} create_at= {} status={}>".format(self.id, self.backup_id,
+                                                                                 self.create_timestamp,
+                                                                                 self.status.value)

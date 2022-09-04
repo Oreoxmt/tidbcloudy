@@ -49,9 +49,9 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         """
         if isinstance(config, CreateClusterConfig):
             config = config.to_object()
-        path = "projects/{}/clusters".format(self._id)
-        resp = self._context.call_post(path=path, json=config)
-        return Cluster(context=self._context, id=resp["id"], project_id=self._id, _from="create")
+        path = "projects/{}/clusters".format(self.id)
+        resp = self.context.call_post(path=path, json=config)
+        return Cluster(context=self.context, id=resp["id"], project_id=self.id)
 
     def update_cluster(self, cluster_id: str, config: Union[UpdateClusterConfig, dict]):
         """
@@ -73,7 +73,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 new_cluster_config.update_component("tidb", 1).update_component("tikv", 1)
                 new_cluster = project.update_cluster(cluster_id=cluster._id, config=new_config.to_object())
         """
-        Cluster(context=self._context, id=cluster_id, project_id=self._id, _from="dummy").update(config)
+        Cluster(context=self.context, id=cluster_id, project_id=self.id).update(config)
 
     def delete_cluster(self, cluster_id: str):
         """
@@ -91,7 +91,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 project = api.get_project(project_id)
                 project.delete_cluster(cluster_id)
         """
-        Cluster(context=self._context, id=cluster_id, project_id=self._id, _from="dummy").delete()
+        Cluster(context=self.context, id=cluster_id, project_id=self.id).delete()
 
     def get_cluster(self, cluster_id: str) -> Cluster:
         """
@@ -110,9 +110,9 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 cluster = project.get_cluster(cluster_id)
 
         """
-        path = "projects/{}/clusters/{}".format(self._id, cluster_id)
-        resp = self._context.call_get(path=path)
-        return Cluster.from_object(self._context, resp)
+        path = "projects/{}/clusters/{}".format(self.id, cluster_id)
+        resp = self.context.call_get(path=path)
+        return Cluster.from_object(self.context, resp)
 
     def iter_clusters(self, page_size: int = 10) -> Iterator[Cluster]:
         """
@@ -161,15 +161,15 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                     print(cluster) # This is a Cluster instance.
 
         """
-        path = "projects/{}/clusters".format(self._id)
+        path = "projects/{}/clusters".format(self.id)
         query = {}
         if page is not None:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path=path, params=query)
+        resp = self.context.call_get(path=path, params=query)
         return Page(
-            [Cluster.from_object(self._context, item) for item in resp["items"]],
+            [Cluster.from_object(self.context, item) for item in resp["items"]],
             page, page_size, resp["total"])
 
     def create_restore(self, *, name: str, backup_id: str, cluster_config: Union[CreateClusterConfig, dict]) -> Restore:
@@ -183,7 +183,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         Returns:
 
         """
-        path = "projects/{}/restores".format(self._id)
+        path = "projects/{}/restores".format(self.id)
         if isinstance(cluster_config, CreateClusterConfig):
             cluster_config = cluster_config.to_object()
         create_config = {
@@ -191,8 +191,8 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
             "backup_id": backup_id,
             "config": cluster_config["config"]
         }
-        resp = self._context.call_post(path=path, json=create_config)
-        return Restore(context=self._context, id=resp["id"], cluster_id=resp["cluster_id"])
+        resp = self.context.call_post(path=path, json=create_config)
+        return Restore(context=self.context, id=resp["id"], cluster_id=resp["cluster_id"])
 
     def get_restore(self, restore_id: str) -> Restore:
         """
@@ -203,9 +203,9 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         Returns:
 
         """
-        path = "projects/{}/restores/{}".format(self._id, restore_id)
-        resp = self._context.call_get(path=path)
-        return Restore.from_object(self._context, resp)
+        path = "projects/{}/restores/{}".format(self.id, restore_id)
+        resp = self.context.call_get(path=path)
+        return Restore.from_object(self.context, resp)
 
     def list_restores(self, *, page: int = None, page_size: int = None) -> Page[Restore]:
         """
@@ -217,15 +217,15 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         Returns:
 
         """
-        path = "projects/{}/restores".format(self._id)
+        path = "projects/{}/restores".format(self.id)
         query = {}
         if page is not None:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path=path, params=query)
+        resp = self.context.call_get(path=path, params=query)
         return Page(
-            [Restore.from_object(self._context, item) for item in resp["items"]],
+            [Restore.from_object(self.context, item) for item in resp["items"]],
             page, page_size, resp["total"]
         )
 
@@ -250,4 +250,4 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
 
     def __repr__(self):
         return "<Project id={} name={} create_at={}>".format(
-            self._id, self._name, timestamp_to_string(self._create_timestamp))
+            self.id, self.name, timestamp_to_string(self.create_timestamp))
