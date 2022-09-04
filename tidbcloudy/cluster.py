@@ -1,4 +1,5 @@
 import time
+import deprecation
 import MySQLdb
 from typing import Union, Iterator
 
@@ -27,11 +28,11 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
     status: ClusterInfo = TiDBCloudyField(ClusterInfo)
 
     def _update_info_from_server(self):
-        path = "projects/{}/clusters/{}".format(self._project_id, self._id)
-        resp = self._context.call_get(path=path)
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        resp = self.context.call_get(path=path)
         self.assign_object(resp)
 
-    def wait_for_ready(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
+    def wait_for_available(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
         """
         Wait for cluster to be ready.
         Args:
@@ -52,35 +53,62 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             cluster = project.create_cluster(cluster_config)
             cluster.wait_for_ready()
         """
-        create_start = time.monotonic()
+        time_start = time.monotonic()
         counter = 1
+        log("Cluster id={} is {}".format(self.id, self.status.cluster_status.value))
         while True:
-            duration = time.monotonic() - create_start
+            duration = time.monotonic() - time_start
             minutes = duration - 60 * counter
             if timeout_sec is not None and duration > timeout_sec:
                 return False
             elif minutes > 0:
                 counter += 1
-                log("Waiting for cluster {} to be ready, {} seconds passed...".format(self._id, int(duration)))
+                log("Waiting for cluster {} to be ready, {} seconds passed...".format(self.id, int(duration)))
             self._update_info_from_server()
-            if self._status.cluster_status == ClusterStatus.AVAILABLE:
-                log("Cluster id={} is available".format(self._id))
+            if self.status.cluster_status == ClusterStatus.AVAILABLE:
+                log("Cluster id={} is {}".format(self.id, self.status.cluster_status.value))
                 return True
             time.sleep(interval_sec)
 
+    @deprecation.deprecated(details="Use wait_for_available instead")
+    def wait_for_ready(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
+        return self.wait_for_available(timeout_sec=timeout_sec, interval_sec=interval_sec)
+
     def update(self, config: Union[UpdateClusterConfig, dict], update_from_server: bool = False):
-        path = "projects/{}/clusters/{}".format(self._project_id, self._id)
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
         if isinstance(config, UpdateClusterConfig):
             config = config.to_object()
-        self._context.call_patch(path=path, json=config)
-        log("Cluster id={} has been updated".format(self._id))
+        self.context.call_patch(path=path, json=config)
+        log("Cluster id={} has been updated".format(self.id))
         if update_from_server:
             self._update_info_from_server()
 
+    def pause(self):
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        config = {
+            "config": {
+                "paused": True
+            }
+        }
+        self.context.call_patch(path=path, json=config)
+        self._update_info_from_server()
+        log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
+
+    def resume(self):
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        config = {
+            "config": {
+                "paused": False
+            }
+        }
+        self.context.call_patch(path=path, json=config)
+        self._update_info_from_server()
+        log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
+
     def delete(self):
-        path = "projects/{}/clusters/{}".format(self._project_id, self._id)
-        self._context.call_delete(path=path)
-        log("Cluster id={} has been deleted".format(self._id))
+        path = "projects/{}/clusters/{}".format(self.project_id, self.id)
+        self.context.call_delete(path=path)
+        log("Cluster id={} has been deleted".format(self.id))
 
     def create_backup(self, *, name: str, description: str = None) -> Backup:
         """
@@ -93,13 +121,13 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             Backup instance.
 
         """
-        path = "projects/{}/clusters/{}/backups".format(self._project_id, self._id)
+        path = "projects/{}/clusters/{}/backups".format(self.project_id, self.id)
         config = {
             "name": name
         }
         if description is not None:
             config["description"] = description
-        resp = self._context.call_post(path=path, json=config)
+        resp = self.context.call_post(path=path, json=config)
         return self.get_backup(resp["id"])
 
     def delete_backup(self, backup_id: str):
@@ -112,7 +140,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             The response of the API.
 
         """
-        Backup(context=self._context, backup_id=backup_id, cluster_id=self._id, project_id=self._project_id).delete()
+        Backup(context=self.context, backup_id=backup_id, cluster_id=self.id, project_id=self.project_id).delete()
 
     def iter_backups(self, *, page_size: int = 10) -> Iterator[Backup]:
         """
@@ -145,16 +173,16 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             The response of the API.
 
         """
-        path = "projects/{}/clusters/{}/backups".format(self._project_id, self._id)
+        path = "projects/{}/clusters/{}/backups".format(self.project_id, self.id)
         query = {}
         if page is not None:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path=path, params=query)
+        resp = self.context.call_get(path=path, params=query)
         return Page(
             [Backup.from_object(
-                self._context, {"cluster_id": self._id, "project_id": self._project_id, **backup}
+                self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup}
             ) for backup in resp["items"]],
             page, page_size, resp["total"]
         )
@@ -169,9 +197,9 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             Backup instance.
 
         """
-        path = "projects/{}/clusters/{}/backups/{}".format(self._project_id, self._id, backup_id)
-        resp = self._context.call_get(path=path)
-        return Backup.from_object(self._context, {"cluster_id": self._id, "project_id": self._project_id, **resp})
+        path = "projects/{}/clusters/{}/backups/{}".format(self.project_id, self.id, backup_id)
+        resp = self.context.call_get(path=path)
+        return Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **resp})
 
     def connect(self, type: str, database: str, password: str):
         connection_strings = self.status.connection_strings.to_object()
@@ -185,9 +213,11 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
                                database=database)
 
     def __repr__(self):
-        if self._status == ClusterStatus.CREATING.value:
-            return "<Cluster id={} creating>".format(self._id)
+        if self.status.cluster_status == ClusterStatus.CREATING.value:
+            return "<Cluster id={} CREATING>".format(self.id)
+        elif self.cluster_type is None:
+            return "<Cluster id={} name={}>".format(self.id, self.name)
         else:
             return "<Cluster id={} name={} type={} create_at={}>".format(
-                self._id, self._name, self._cluster_type,
-                timestamp_to_string(self._create_timestamp))
+                self.id, self.name, self.cluster_type.value,
+                timestamp_to_string(self.create_timestamp))
