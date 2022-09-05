@@ -10,11 +10,15 @@
 pip install tidbcloudy
 ```
 
-Make sure that you have mysql client installed in your environment. For more information, see [PyMySQL/mysqlclient](https://github.com/PyMySQL/mysqlclient#install).
+Make sure that you have installed mysql client in your environment. For more information, see [PyMySQL/mysqlclient](https://github.com/PyMySQL/mysqlclient#install).
 
 ## Usage
 
+To get full code examples, see the [`examples`](/examples/) folder.
+
 ### List all resources in your organization
+
+To get the full code example of listing all projects, clusters, backup tasks, and restore tasks in your organization, see [`/examples/0_list_resources.py`](/examples/0_list_resources.py).
 
 ```python
 import tidbcloudy
@@ -31,6 +35,12 @@ for project in api.iter_projects():
 ```
 
 ### Create a cluster
+
+To list all provider regions and cluster configuration specifications, run the [`/examples/1_list_provider_regions.py`](/examples/1_list_provider_regions.py).
+
+To create a Developer Tier cluster, run the [`2_1_create_developer_cluster.py`](/examples/2_1_create_developer_cluster.py).
+
+To create a Dedicated Tier cluster, run the [`2_2_create_dedicated_cluster.py`](/examples/2_2_create_dedicated_cluster.py).
 
 ```python
 import tidbcloudy
@@ -54,7 +64,16 @@ cluster = project.create_cluster(config)
 cluster.wait_for_ready()
 ```
 
+### Connect with TiDB
+
+To connect with your TiDB cluster, run the [](/examples/3_connect_mysql.py).
+
+```python
+```
+
 ### Modify a cluster
+
+To modify a cluster, run the [](/examples/4_scale_a_cluster.py).
 
 ```python
 import tidbcloudy
@@ -68,7 +87,9 @@ new_config.update_component("tiflash", node_quantity=1, node_size="8C64G", stora
 cluster.update(new_config)
 ```
 
-### Create a backup
+### Backup and restore
+
+To create a backup and restore, run the [](/examples/5_backup_restore.py)
 
 ```python
 import tidbcloudy
@@ -80,29 +101,18 @@ backup = cluster.create_backup(name="backup-1", description="created by tidbclou
 print(backup)
 ```
 
-### Create a restore
+### Pause or resume your cluster
+
+To pause or resume your cluster, run the [](/examples/6_pause_cluster.py).
 
 ```python
-import tidbcloudy
-from tidbcloudy.specification import CreateClusterConfig
+```
 
-api = tidbcloudy.TiDBCloud(public_key="public_key", private_key="private_key")
-project = api.get_project("project_id", update_from_server=True)
-cluster = project.get_cluster("cluster_id")
+### Delete all resources
 
-backup_config = CreateClusterConfig()
-backup_config \
-    .set_cluster_type("cluster-type") \
-    .set_cloud_provider("cloud-provider") \
-    .set_region("region-code") \
-    .set_port(4399) \
-    .set_root_password("root-password") \
-    .set_component("tidb", "8C16G", 1) \
-    .set_component("tikv", "8C32G", 3, 500) \
-    .set_component("tiflash", "8C64G", 2, 500) \
-    .add_current_ip_access()
-restore = project.create_restore(backup_id="backup_id", name="restore-by-tidbcloudy", cluster_config=backup_config)
-print(restore)
+To delete all clusters and backup tasks in your project, run the [](/examples/7_delete_resources.py).
+
+```python
 ```
 
 ## Enhancements comparing to original TiDB Cloud API
