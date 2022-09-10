@@ -316,17 +316,27 @@ class UpdateClusterConfig:
     def to_object(self) -> dict:
         components = {}
         if self._tidb is not None:
-            components["tidb"] = {"node_quantity": self._tidb.node_quantity}
+            components["tidb"] = {}
+            if self._tidb.node_size is not None:
+                components["tidb"]["node_size"] = self._tidb.node_size
+            if self._tidb.node_quantity is not None:
+                components["tidb"]["node_quantity"] = self._tidb.node_quantity
         if self._tikv is not None:
-            components["tikv"] = {"node_quantity": self._tikv.node_quantity}
+            components["tikv"] = {}
+            if self._tikv.node_size is not None:
+                components["tikv"]["node_size"] = self._tikv.node_size
+            if self._tikv.node_quantity is not None:
+                components["tikv"]["node_quantity"] = self._tikv.node_quantity
+            if self._tikv.storage_size_gib is not None:
+                components["tikv"]["storage_size_gib"] = self._tikv.storage_size_gib
         if self._tiflash is not None:
             components["tiflash"] = {}
-            if self._tiflash.storage_size_gib is not None:
-                components["tiflash"]["storage_size_gib"] = self._tiflash.storage_size_gib
             if self._tiflash.node_size is not None:
                 components["tiflash"]["node_size"] = self._tiflash.node_size
             if self._tiflash.node_quantity is not None:
                 components["tiflash"]["node_quantity"] = self._tiflash.node_quantity
+            if self._tiflash.storage_size_gib is not None:
+                components["tiflash"]["storage_size_gib"] = self._tiflash.storage_size_gib
 
         return {
             "config": {
