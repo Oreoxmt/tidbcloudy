@@ -1,5 +1,7 @@
 import os
+
 import tidbcloudy
+from tidbcloudy.specification import ClusterStatus
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -13,7 +15,7 @@ project = api.get_project(project_id, update_from_server=True)
 cluster = project.get_cluster(cluster_id)
 print(cluster)
 
-if cluster.status.cluster_status.value == "AVAILABLE":
+if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
     connection_strings = cluster.status.connection_strings
     connection = cluster.connect(type="standard", database="test", password="your_root_password")
     print(connection)
