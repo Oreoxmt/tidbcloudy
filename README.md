@@ -54,7 +54,7 @@ pip3 install tidbcloudy
 - Create a TiDB Cloud API key. To manage your API keys, see [TiDB Cloud API Documentation](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management).
 - Install the latest version of `tidbcloudy`.
 
-To get full code examples, see the [`examples`](/examples) folder.
+To get full code examples, see the [`examples`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples) folder.
 
 > Note:
 > 
@@ -67,7 +67,7 @@ To get full code examples, see the [`examples`](/examples) folder.
 
 ### List all resources in your organization
 
-To get the full code example of listing all projects, clusters, backup tasks, and restore tasks in your organization, see [`0_list_resources.py`](/examples/0_list_resources.py).
+To get the full code example of listing all projects, clusters, backup tasks, and restore tasks in your organization, see [`0_list_resources.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/0_list_resources.py).
 
 ```python
 import os
@@ -93,7 +93,7 @@ for project in api.iter_projects():
 
 ### Create a cluster
 
-Before creating a cluster, you should list all available provider regions and cluster configuration specifications. For more details, run the [`1_list_provider_regions.py`](/examples/1_list_provider_regions.py).
+Before creating a cluster, you should list all available provider regions and cluster configuration specifications. For more details, run the [`1_list_provider_regions.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/1_list_provider_regions.py).
 
 ```python
 import os
@@ -129,9 +129,9 @@ for spec in api.list_provider_regions():
 > 
 > Creating a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
 
-To create a Developer Tier cluster, run the [`2_1_create_developer_cluster.py`](/examples/2_1_create_developer_cluster.py).
+To create a Developer Tier cluster, run the [`2_1_create_developer_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_developer_cluster.py).
 
-To create a Dedicated Tier cluster, run the [`2_2_create_dedicated_cluster.py`](/examples/2_2_create_dedicated_cluster.py).
+To create a Dedicated Tier cluster, run the [`2_2_create_dedicated_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_2_create_dedicated_cluster.py).
 
 The following takes creating a Developer Tier cluster as an example:
 
@@ -165,7 +165,7 @@ cluster.wait_for_ready()
 
 ### Connect to TiDB
 
-To connect to your TiDB cluster, run the [`3_connect_mysql.py`](/examples/3_connect_mysql.py).
+To connect to your TiDB cluster, run the [`3_connect_mysql.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/3_connect_mysql.py).
 
 ```python
 import os
@@ -201,7 +201,7 @@ if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
 > 
 > Modify a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
 
-To modify a cluster, run the [`4_scale_a_cluster.py`](/examples/4_scale_a_cluster.py).
+To modify a cluster, run the [`4_scale_a_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/4_scale_a_cluster.py).
 
 ```python
 import os
@@ -234,7 +234,7 @@ print("The new config is: {}".format(cluster.config.components.to_object()))
 > 
 > Backup or restore a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
 
-To create a backup and restore, run the [`5_backup_restore.py`](/examples/5_backup_restore.py)
+To create a backup and restore, run the [`5_backup_restore.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/5_backup_restore.py)
 
 ```python
 import os
@@ -276,7 +276,7 @@ for restore in project.iter_restores():
 
 ### Pause or resume your cluster
 
-To pause or resume your cluster, run the [`6_pause_cluster.py`](/examples/6_pause_cluster.py).
+To pause or resume your cluster, run the [`6_pause_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/6_pause_cluster.py).
 
 ```python
 import os
@@ -308,7 +308,7 @@ if cluster.status.cluster_status.value == "RESUMING":
 > 
 > This is a destructive operation. It will delete all resources in the project. **DO NOT** run this script in a production environment.
 
-To delete all clusters and backup tasks in your project, run the [`7_delete_resources.py`](/examples/7_delete_resources.py).
+To delete all clusters and backup tasks in your project, run the [`7_delete_resources.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/7_delete_resources.py).
 
 ```python
 import os
