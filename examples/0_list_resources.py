@@ -2,6 +2,7 @@ import os
 
 import tidbcloudy
 from tidbcloudy.project import Project
+from tidbcloudy.specification import ClusterType
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -15,7 +16,7 @@ for project in api.iter_projects():
     print(project)
     for cluster in project.iter_clusters():
         print(cluster)
-        if cluster.cluster_type.value == "DEDICATED":
+        if cluster.cluster_type == ClusterType.DEDICATED:
             for backup in cluster.iter_backups():
                 print(backup)
     for restore in project.iter_restores():
