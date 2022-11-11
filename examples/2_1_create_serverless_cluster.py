@@ -13,7 +13,7 @@ project = api.get_project(project_id, update_from_server=True)
 
 config = CreateClusterConfig()
 config\
-    .set_name("developer-0") \
+    .set_name("serverless-0") \
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
     .set_region("us-west-2") \
