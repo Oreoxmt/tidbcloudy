@@ -14,7 +14,7 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 - manage your TiDB Cloud **projects** (only _list_ is supported now)
 - list all available cloud providers (AWS and GCP), regions and specifications before creating or modifying a cluster
-- manage your Developer Tier or Dedicated Tier **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
+- manage your Serverless Tier or Dedicated Tier **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
 - manage your **backups** of a cluster (_create_, _get_, _list_, _delete_)
 - manage your **restores** of a project (_create_, _get_, _list_)
 
@@ -126,14 +126,14 @@ for spec in api.list_provider_regions():
 ```
 
 > Note:
-> 
+>
 > Creating a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
 
-To create a Developer Tier cluster, run the [`2_1_create_developer_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_developer_cluster.py).
+To create a Serverless Tier cluster, run the [`2_1_create_serverless_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_serverless_cluster.py).
 
 To create a Dedicated Tier cluster, run the [`2_2_create_dedicated_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_2_create_dedicated_cluster.py).
 
-The following takes creating a Developer Tier cluster as an example:
+The following takes creating a Serverless Tier cluster as an example:
 
 ```python
 import os
@@ -150,7 +150,7 @@ project = api.get_project(project_id, update_from_server=True)
 
 config = CreateClusterConfig()
 config\
-    .set_name("developer-0") \
+    .set_name("serverless-0") \
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
     .set_region("us-west-2") \
@@ -198,7 +198,7 @@ if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
 ### Modify a cluster
 
 > Note:
-> 
+>
 > Modify a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
 
 To modify a cluster, run the [`4_scale_a_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/4_scale_a_cluster.py).
@@ -231,7 +231,7 @@ print("The new config is: {}".format(cluster.config.components.to_object()))
 ### Backup and restore
 
 > Note:
-> 
+>
 > Backup or restore a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
 
 To create a backup and restore, run the [`5_backup_restore.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/5_backup_restore.py)
@@ -307,7 +307,7 @@ if cluster.status.cluster_status == ClusterStatus.RESUMING:
 ### Delete all resources
 
 > Warning:
-> 
+>
 > This is a destructive operation. It will delete all resources in the project. **DO NOT** run this script in a production environment.
 
 To delete all clusters and backup tasks in your project, run the [`7_delete_resources.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/7_delete_resources.py).
@@ -336,4 +336,5 @@ for cluster in project.iter_clusters():
 ## Related Projects
 
 - Go SDK: [go-tidbcloud-sdk-v1](https://github.com/c4pt0r/go-tidbcloud-sdk-v1) by [@c4pt0r](https://github.com/c4pt0r)
+- TiDB Cloud CLI: [OhMyTiUP/tidb-cloud](https://github.com/luyomo/OhMyTiUP/tree/main/pkg/tidbcloudapi) by [@luyomo](https://github.com/luyomo)
 - Official code samples in Go and Python: [tidbcloud-api-samples](https://github.com/tidbcloud/tidbcloud-api-samples)
