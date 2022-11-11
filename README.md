@@ -24,7 +24,7 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 | tidbcloudy                                                         | TiDB Cloud API                                                                                          |
 |--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906) |
+| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028)|
 | [1.0.0](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0) | v1beta [Release 20220823](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823) |
 | [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1) | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809) |                                                                          |
 
@@ -57,9 +57,9 @@ pip3 install tidbcloudy
 To get full code examples, see the [`examples`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples) folder.
 
 > Note:
-> 
+>
 > It is recommended to set environment variables for your API public and private key. For example, in bash, you can:
-> 
+>
 > ```bash
 > export PUBLIC_KEY=your_api_public_key
 > export PRIVATE_KEY=your_api_private_key
