@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Union, List
 
-from ._base import TiDBCloudyBase, TiDBCloudyField, TiDBCloudyListField
-from .util.ip import get_current_ip_address
+from tidbcloudy.api._base import TiDBCloudyBase, TiDBCloudyField, TiDBCloudyListField
+from tidbcloudy.util.ip import get_current_ip_address
 
 
 class ClusterType(Enum):

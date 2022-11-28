@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Callable
 
-from tidbcloudy.context import Context
+from tidbcloudy.api.context import Context
 
 
 class TiDBCloudyContextualBase:

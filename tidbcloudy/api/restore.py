@@ -1,5 +1,5 @@
-from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
-from tidbcloudy.specification import RestoreStatus, ClusterInfoOfRestore
+from tidbcloudy.api._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from tidbcloudy.api.specification import RestoreStatus, ClusterInfoOfRestore
 
 
 # noinspection PyShadowingBuiltins

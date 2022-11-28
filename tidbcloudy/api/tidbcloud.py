@@ -1,8 +1,8 @@
 from typing import Iterator, List
 
-from tidbcloudy.context import Context
-from tidbcloudy.project import Project
-from tidbcloudy.specification import CloudSpecification
+from tidbcloudy.api.context import Context
+from tidbcloudy.api.project import Project
+from tidbcloudy.api.specification import CloudSpecification
 from tidbcloudy.util.page import Page
 
 

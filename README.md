@@ -73,7 +73,7 @@ To get the full code example of listing all projects, clusters, backup tasks, an
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import ClusterType
+from tidbcloudy.api.specification import ClusterType
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -138,7 +138,7 @@ The following takes creating a Serverless Tier cluster as an example:
 ```python
 import os
 import tidbcloudy
-from tidbcloudy.specification import CreateClusterConfig
+from tidbcloudy.api.specification import CreateClusterConfig
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -149,7 +149,7 @@ api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
 
 config = CreateClusterConfig()
-config\
+config \
     .set_name("serverless-0") \
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
@@ -171,7 +171,7 @@ To connect to your TiDB cluster, run the [`3_connect_mysql.py`](https://github.c
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import ClusterStatus
+from tidbcloudy.api.specification import ClusterStatus
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -207,7 +207,7 @@ To modify a cluster, run the [`4_scale_a_cluster.py`](https://github.com/Oreoxmt
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import UpdateClusterConfig
+from tidbcloudy.api.specification import UpdateClusterConfig
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -240,7 +240,7 @@ To create a backup and restore, run the [`5_backup_restore.py`](https://github.c
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import CreateClusterConfig
+from tidbcloudy.api.specification import CreateClusterConfig
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -282,7 +282,7 @@ To pause or resume your cluster, run the [`6_pause_cluster.py`](https://github.c
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import ClusterStatus
+from tidbcloudy.api.specification import ClusterStatus
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -316,7 +316,7 @@ To delete all clusters and backup tasks in your project, run the [`7_delete_reso
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import ClusterType
+from tidbcloudy.api.specification import ClusterType
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")

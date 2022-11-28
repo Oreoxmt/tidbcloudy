@@ -1,6 +1,6 @@
 from requests.auth import HTTPDigestAuth
 import requests
-from tidbcloudy.exception import TiDBCloudResponseException
+from ..exception import TiDBCloudResponseException
 
 
 class Context:

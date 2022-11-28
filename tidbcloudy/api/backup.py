@@ -1,6 +1,6 @@
-from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from tidbcloudy.api._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .specification import BackupType, BackupStatus
-from .util.log import log
+from tidbcloudy.util.log import log
 
 
 # noinspection PyShadowingBuiltins

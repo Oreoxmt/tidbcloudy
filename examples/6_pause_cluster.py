@@ -1,7 +1,7 @@
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import ClusterStatus
+from tidbcloudy.api.specification import ClusterStatus
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")

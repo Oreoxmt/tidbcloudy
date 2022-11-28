@@ -3,13 +3,13 @@ import deprecation
 import MySQLdb
 from typing import Union, Iterator
 
-from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from tidbcloudy.api._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
     ClusterStatus
 from .backup import Backup
-from .util.log import log
-from .util.timestamp import timestamp_to_string
-from .util.page import Page
+from tidbcloudy.util.log import log
+from tidbcloudy.util.timestamp import timestamp_to_string
+from tidbcloudy.util.page import Page
 
 
 # noinspection PyShadowingBuiltins

@@ -1,8 +1,8 @@
 import os
 
 import tidbcloudy
-from tidbcloudy.project import Project
-from tidbcloudy.specification import ClusterType
+from tidbcloudy.api.project import Project
+from tidbcloudy.api.specification import ClusterType
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")

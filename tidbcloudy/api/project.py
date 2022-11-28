@@ -1,11 +1,11 @@
 from typing import Union, Iterator
 
-from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
+from tidbcloudy.api._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .cluster import Cluster
 from .restore import Restore
 from .specification import CreateClusterConfig, UpdateClusterConfig
-from .util.timestamp import timestamp_to_string
-from .util.page import Page
+from tidbcloudy.util.timestamp import timestamp_to_string
+from tidbcloudy.util.page import Page
 
 
 # noinspection PyShadowingBuiltins
