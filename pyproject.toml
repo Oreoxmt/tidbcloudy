@@ -11,9 +11,6 @@ requests = "^2.27.1"
 mysqlclient = "^2.1.1"
 deprecation = "^2.1.0"
 
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
-
 [tool.poetry.scripts]
 tidbcloudy = 'tidbcloudy.__main__:cli'
 
