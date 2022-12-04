@@ -22,7 +22,8 @@ class TiDBCloudyBase:
     def __init_subclass__(cls):
         cls._keys = {}
         for key in cls.__slots__:
-            key = key.removeprefix("_")
+            if key.startswith("_"):
+                key = key[1:]
             cls._keys[key] = getattr(cls, key)
 
     def __init__(self, **kwargs):

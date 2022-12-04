@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tidbcloudy"
-version = "1.0.1"
+version = "1.0.2"
 description = "Python SDK for TiDB Cloud"
 readme = "README.md"
 authors = ["Aolin <aolinz@outlook.com>"]
