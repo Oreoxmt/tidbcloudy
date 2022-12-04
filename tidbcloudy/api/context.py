@@ -8,7 +8,7 @@ class Context:
                  public_key: str,
                  private_key: str,
                  *,
-                 base_url: str = "https://api.tidbcloud.com/api/v1beta/"
+                 base_url: str
                  ):
         """
         Args:

@@ -1,4 +1,4 @@
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
 from tidbcloudy.api.context import Context
 from tidbcloudy.api.project import Project
@@ -7,8 +7,13 @@ from tidbcloudy.util.page import Page
 
 
 class TiDBCloud:
-    def __init__(self, public_key: str, private_key: str):
-        self._context = Context(public_key, private_key)
+
+    DEFAULT_BASE_URL = "https://api.tidbcloud.com/api/v1beta/"
+
+    def __init__(self, public_key: str, private_key: str, *, base_url: Optional[str] = None):
+        if base_url is None:
+            base_url = self.DEFAULT_BASE_URL
+        self._context = Context(public_key, private_key, base_url=base_url)
 
     def get_project(self, project_id: str, update_from_server: bool = False) -> Project:
         """
