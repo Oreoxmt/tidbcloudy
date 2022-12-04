@@ -32,7 +32,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         resp = self.context.call_get(path=path)
         self.assign_object(resp)
 
-    def wait_for_available(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
+    def wait_for_available(self, *, timeout_sec: int = None, interval_sec: int = 1) -> bool:
         """
         Wait for cluster to be ready.
         Args:
@@ -55,7 +55,6 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         """
         time_start = time.monotonic()
         counter = 1
-        log("Cluster id={} is {}".format(self.id, self.status.cluster_status.value))
         while True:
             duration = time.monotonic() - time_start
             minutes = duration - 60 * counter
