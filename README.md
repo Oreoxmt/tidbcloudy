@@ -160,7 +160,7 @@ config\
 cluster = project.create_cluster(config)
 print(cluster)
 
-cluster.wait_for_ready()
+cluster.wait_for_available()
 ```
 
 ### Connect to TiDB
@@ -223,7 +223,7 @@ print("The original config is: {}".format(cluster.config.components.to_object())
 new_config = UpdateClusterConfig()
 new_config.update_component("tiflash", node_quantity=1, node_size="8C64G", storage_size_gib=500)
 cluster.update(new_config)
-cluster.wait_for_ready()
+cluster.wait_for_available()
 
 print("The new config is: {}".format(cluster.config.components.to_object()))
 ```
