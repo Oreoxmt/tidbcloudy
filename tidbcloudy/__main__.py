@@ -44,12 +44,12 @@ def cli_cluster():
 @cli_cluster.command("create")
 @click.option("-f", "--file", help="The json configuration file")
 @click.pass_obj
-def cli_cluster_create(obj, f):
+def cli_cluster_create(obj, file):
     cluster_config = CreateClusterConfig()
     api = obj["api"]  # type: TiDBCloud
     project = obj["project"]  # type: Project
-    if f is not None:
-        cluster_config = json.load(f)
+    if file is not None:
+        cluster_config = json.load(file)
         new_cluster = project.create_cluster(cluster_config)
         click.echo(f"Creating the cluster...")
         new_cluster.wait_for_available()
