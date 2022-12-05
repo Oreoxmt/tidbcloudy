@@ -23,4 +23,4 @@ config\
 cluster = project.create_cluster(config)
 print(cluster)
 
-cluster.wait_for_ready()
+cluster.wait_for_available()

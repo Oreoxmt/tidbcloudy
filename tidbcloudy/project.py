@@ -45,7 +45,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                         .add_ip_access(cidr="your ip") \
                         .add_ip_access(cidr="your ip")
                 cluster = project.create_cluster(config)
-                cluster.wait_for_ready()
+                cluster.wait_for_available()
         """
         if isinstance(config, CreateClusterConfig):
             config = config.to_object()

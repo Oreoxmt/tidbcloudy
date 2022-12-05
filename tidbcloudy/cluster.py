@@ -51,11 +51,10 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             cluster_config = CreateClusterConfig()
             cluster_config.set_name("your_cluster_name").set_cluster_type("your_cluster_type").set_cloud_provider("your_cloud_provider").set_region("your_region").set_port(4000).set_root_password("your_root_password")
             cluster = project.create_cluster(cluster_config)
-            cluster.wait_for_ready()
+            cluster.wait_for_available()
         """
         time_start = time.monotonic()
         counter = 1
-        log("Cluster id={} is {}".format(self.id, self.status.cluster_status.value))
         while True:
             duration = time.monotonic() - time_start
             minutes = duration - 60 * counter
