@@ -7,6 +7,7 @@ from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
     ClusterStatus
 from .backup import Backup
+from .importer import Import
 from .util.log import log
 from .util.timestamp import timestamp_to_string
 from .util.page import Page
@@ -200,6 +201,42 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         resp = self.context.call_get(path=path)
         return Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **resp})
 
+    # https://docs.pingcap.com/tidbcloud/api/v1beta#tag/Import/operation/CreateImportTask
+    def create_import(self, *, name:str = "", spec: Union[CreateImportSpec, dict], table_definition: Union[TableDefinition, dict]) -> Import:
+        path = "projects/{}/clusters/{}/imports".format(self.project_id, self.id)
+        config = {
+            "name": name
+            "spec":{
+                "source": source,
+                "target": target
+            },
+            "options":{
+                "pre_create_tables":
+            }
+        }
+        resp = self.context.call_post(path=path, json=config)
+        pass
+
+
+    # https://docs.pingcap.com/tidbcloud/api/v1beta#tag/Import/operation/ListImportTasks
+    def iter_imports(self) -> Iterator[Import]:
+        pass
+    def list_imports(self) -> Page[Import]:
+        pass
+
+    # https://docs.pingcap.com/tidbcloud/api/v1beta#tag/Import/operation/GetImportTask
+    def get_import(self) -> Import:
+        pass
+
+    # https://docs.pingcap.com/tidbcloud/api/v1beta#tag/Import/operation/PreviewImportData
+    def preview_import(self):
+        pass
+    # https://docs.pingcap.com/tidbcloud/api/v1beta#tag/Import/operation/GetImportTaskRoleInfo
+    def retrieve_import(self):
+        pass
+    # https://docs.pingcap.com/tidbcloud/api/v1beta#tag/Import/operation/UploadLocalFile
+    def upload_import(self):
+        pass
     def connect(self, type: str, database: str, password: str):
         connection_strings = self.status.connection_strings.to_object()
         user = connection_strings["default_user"]

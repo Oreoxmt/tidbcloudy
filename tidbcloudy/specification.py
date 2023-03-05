@@ -52,6 +52,25 @@ class RestoreStatus(Enum):
     FAILED = "FAILED"
     SUCCESS = "SUCCESS"
 
+class ImportStatusPhase(Enum):
+    PREPARING = "PREPARING"
+    IMPORTING = "IMPORTING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+    CANCELING = "CANCELING"
+    CANCELED = "CANCELED"
+
+class ImportSourceType(Enum):
+    S3 = "S3"
+    GCS = "GCS"
+    LOCAL_FILE = "LOCAL_FILE"
+
+class ImportSourceType(Enum):
+    CSV = "CSV"
+    PARQUET = "PARQUET"
+    SQL = "SQL"
+    AURORA_SNAPSHOT = "AURORA_SNAPSHOT"
+
 
 # noinspection PyShadowingBuiltins
 class NodeQuantityRange(TiDBCloudyBase):
@@ -292,6 +311,76 @@ class CreateClusterConfig:
             }
         }
 
+class CreateImportSpec:
+    def __init__(self):
+        self._name = None
+        self._source_type = None
+        self._source_uri = None
+        self._aws_assume_role = None
+        self._source_aws_key_access = None
+        self._source_format = None
+        self._target_table = []
+        self._pre_created_tables = []
+        self._pre_created_columns = []
+        self._pre_created_primary_keys = []
+    def set_name(self, name:str):
+        self._name = name
+        return self
+    def set_source(self, type:ImportSourceType, uri:str, format_type: ImportSourceType):
+        self._source_type = type
+        self._source_uri = uri
+        self._source_format = {
+            "type": format_type
+        }
+        return self
+    def set_aws_access_role(self, aws_assume_role: str):
+        self._aws_assume_role = aws_assume_role
+        return self
+
+    def set_csv_config(self, delimiter:str = ",", quote:str = "\"", backslash_escape:bool = True, has_header_row:bool = True):
+        self._delimiter = delimiter
+        self._quote = quote
+        self._backslash_escape = backslash_escape
+        self._has_header_row = has_header_row
+        return self
+    def set_aws_key(self, access_key_id: str, secret_access_key: str):
+        self._source_aws_key_access = {
+            "access_key_id": access_key_id,
+            "secret_access_key": secret_access_key
+        }
+        return self
+
+    def set_target_tables(self, database_name:str, table_name:str, file_name_pattern:str = ""):
+        table = {
+            "database_name": database_name,
+            "table_name": table_name,
+            "file_name_pattern": file_name_pattern
+        }
+        self._target_table.append(table)
+        return self
+
+    def add_pre_created_table(self, database_name:str, table_name:str, pre_created_schema:list):
+        table = {
+            "database_name": database_name,
+            "table_name": table_name,
+            "schema":{
+                pre_created_schema
+            }
+        }
+        self._pre_created_tables.append(table)
+        return self
+    def add_pre_created_column(self, column_name:str, column_type:str):
+        self._column_name = column_name
+        self._column_type = column_type
+        column = {
+            "column_name": column_name,
+            "column_type": column_type
+        }
+        self._pre_created_columns.append(column)
+        return self
+    def add_pre_created_primary_key(self, primary_key_columns: str):
+        self._pre_created_primary_keys.append(primary_key_columns)
+        return self
 
 class UpdateClusterConfig:
     def __init__(self):
@@ -385,3 +474,61 @@ class CloudSpecification(TiDBCloudyBase):
             self.cluster_type.value if self.cluster_type is not None else None,
             self.cloud_provider.value if self.cloud_provider is not None else None,
             self.region)
+
+class ImportMetadta(TiDBCloudyBase):
+    __slots__ = ["_id", "_name", "_create_timestamp", ]
+    id: str = TiDBCloudyField(str)
+    name: str = TiDBCloudyField(str)
+    create_timestamp: str = TiDBCloudyField(str)
+
+    def __repr__(self):
+        return "<id={}, name={}, create_timestamp={}>".format(self.id, self.name, self.create_timestamp)
+
+
+class AWSAssumeRole(TiDBCloudyBase):
+    assume_role: str = TiDBCloudyField(str)
+
+class AWSAccessKey(TiDBCloudyBase):
+    access_key_id: str = TiDBCloudyField(str)
+    secret_access_key: str = TiDBCloudyField(str)
+
+
+class ImportSourceCSV(TiDBCloudyBase):
+    delimiter: str = TiDBCloudyField(str)
+    quote: str = TiDBCloudyField(str)
+    backslash_escape: bool = TiDBCloudyField(bool)
+    has_header_row: bool = TiDBCloudyField(bool)
+
+class ImportSourceFormat(TiDBCloudyBase):
+    type: ImportSourceType = TiDBCloudyField(ImportSourceType)
+    csv_config: ImportSourceCSV = TiDBCloudyField(ImportSourceCSV)
+
+class ImportSource(TiDBCloudyBase):
+    type: ImportSourceType = TiDBCloudyField(ImportSourceType)
+    uri: str = TiDBCloudyField(str)
+    aws_assume_role_access: AWSAssumeRole = TiDBCloudyField(AWSAssumeRole)
+    aws_key_access: AWSAccessKey = TiDBCloudyField(AWSAccessKey)
+    format: ImportSourceFormat = TiDBCloudyField(ImportSourceFormat)
+
+class ImportTargettable(TiDBCloudyBase):
+    database_name: str = TiDBCloudyField(str)
+    table_name: str = TiDBCloudyField(str)
+    file_name_pattern: str = TiDBCloudyField(str)
+
+class ImportTarget(TiDBCloudyBase):
+    tables: ImportTargettable = TiDBCloudyField(ImportTargettable)
+class ImportSpec(TiDBCloudyBase):
+    source: ImportSource = TiDBCloudyField(ImportSource)
+    target: ImportTarget = TiDBCloudyField(ImportTarget)
+
+class ImportProgress(TiDBCloudyBase):
+    import_progress: int = TiDBCloudyField(int)
+    validation_progress: int = TiDBCloudyField(int)
+
+class ImportStatus(TiDBCloudyBase):
+    phase: ImportStatusPhase = TiDBCloudyField(ImportStatusPhase)
+    error_message: str = TiDBCloudyField(str)
+    start_timestamp: str = TiDBCloudyField(str)
+    end_timestamp: str = TiDBCloudyField(str)
+    progress: ImportProgress = TiDBCloudyField(ImportProgress)
+    source_total_size_bytes: str = TiDBCloudyField(str)
