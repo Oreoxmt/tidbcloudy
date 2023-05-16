@@ -1,6 +1,27 @@
 # Python SDK for TiDB Cloud
 
-`tidbcloudy` is an unofficial Python SDK for [TiDB Cloud](https://tidbcloud.com).
+`tidbcloudy` is an **unofficial** Python SDK for [TiDB Cloud](https://tidbcloud.com).
+
+## Table of contents
+
+- [Introduction](#introduction)
+
+    - [Compatibility with TiDB Cloud API](#compatibility-with-tidb-cloud-api)
+    - [Enhancements comparing to original TiDB Cloud API](#enhancements-comparing-to-original-tidb-cloud-api)
+
+- [Installation](#installation)
+- [Usage](#usage)
+
+    - [Prerequisites](#prerequisites)
+    - [List all resources in your organization](#list-all-resources-in-your-organization)
+    - [Create a cluster](#create-a-cluster)
+    - [Connect to TiDB](#connect-to-tidb)
+    - [Modify a cluster](#modify-a-cluster)
+    - [Backup and restore](#backup-and-restore)
+    - [Pause or resume your cluster](#pause-or-resume-your-cluster)
+    - [Delete all resources](#delete-all-resources)
+
+- [Related projects](#related-projects)
 
 ## Introduction
 
@@ -8,7 +29,7 @@ For more information about TiDB Cloud API, see [TiDB Cloud API Documentation](ht
 
 > TiDB Cloud is a fully-managed Database-as-a-Service (DBaaS) that brings everything great about TiDB to your cloud.
 
-If you do not have a TiDB Cloud account yet, you can sign up [here](https://tidbcloud.com). For more details about TiDB Cloud, refer to [TiDB Cloud Documentation](https://docs.pingcap.com/tidbcloud/).
+If you do not have a TiDB Cloud account yet, you can sign up [here](https://tidbcloud.com). For more details about TiDB Cloud, refer to [TiDB Cloud Documentation](https://docs.pingcap.com/tidbcloud).
 
 You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage your projects, clusters, backups and restores:
 
@@ -20,11 +41,11 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 ### Compatibility with TiDB Cloud API
 
-`tidbcloudy` is compatible with [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta). The following table lists the supported API versions:
+`tidbcloudy` is compatible with [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta). **Endpoints added in [Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228) and [Release 20230328](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328) are not supported for now**. The following table lists the supported API versions:
 
 | tidbcloudy                                                         | TiDB Cloud API                                                                                          |
 |--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028)|
+| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1), [1.0.2](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.2), [1.0.3](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.3) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028), [Release 20230104](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230104), [Release 20230214](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230214), [Release 20230321](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230321)|
 | [1.0.0](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0) | v1beta [Release 20220823](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823) |
 | [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1) | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809) |                                                                          |
 
@@ -127,7 +148,7 @@ for spec in api.list_provider_regions():
 
 > Note:
 >
-> Creating a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
+> Creating a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details).
 
 To create a Serverless Tier cluster, run the [`2_1_create_serverless_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_serverless_cluster.py).
 
@@ -199,7 +220,7 @@ if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
 
 > Note:
 >
-> Modify a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
+> Modify a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details).
 
 To modify a cluster, run the [`4_scale_a_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/4_scale_a_cluster.py).
 
@@ -232,7 +253,7 @@ print("The new config is: {}".format(cluster.config.components.to_object()))
 
 > Note:
 >
-> Backup or restore a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details/).
+> Backup or restore a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details).
 
 To create a backup and restore, run the [`5_backup_restore.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/5_backup_restore.py)
 
@@ -333,8 +354,8 @@ for cluster in project.iter_clusters():
     cluster.delete()
 ```
 
-## Related Projects
+## Related projects
 
 - Go SDK: [go-tidbcloud-sdk-v1](https://github.com/c4pt0r/go-tidbcloud-sdk-v1) by [@c4pt0r](https://github.com/c4pt0r)
-- TiDB Cloud CLI: [OhMyTiUP/tidb-cloud](https://github.com/luyomo/OhMyTiUP/tree/main/pkg/tidbcloudapi) by [@luyomo](https://github.com/luyomo)
+- Official TiDB Cloud CLI: [tidbcloud-cli](https://github.com/tidbcloud/tidbcloud-cli) | [User documentation](https://docs.pingcap.com/tidbcloud/cli-reference)
 - Official code samples in Go and Python: [tidbcloud-api-samples](https://github.com/tidbcloud/tidbcloud-api-samples)
