@@ -1,6 +1,6 @@
 # Python SDK for TiDB Cloud
 
-`tidbcloudy` is an unofficial Python SDK for [TiDB Cloud](https://tidbcloud.com).
+`tidbcloudy` is a Python SDK and CLI for [TiDB Cloud](https://tidbcloud.com). Note this is a personal and unofficial project.
 
 ## Introduction
 
@@ -336,5 +336,5 @@ for cluster in project.iter_clusters():
 ## Related Projects
 
 - Go SDK: [go-tidbcloud-sdk-v1](https://github.com/c4pt0r/go-tidbcloud-sdk-v1) by [@c4pt0r](https://github.com/c4pt0r)
-- TiDB Cloud CLI: [OhMyTiUP/tidb-cloud](https://github.com/luyomo/OhMyTiUP/tree/main/pkg/tidbcloudapi) by [@luyomo](https://github.com/luyomo)
+- Official TiDB Cloud CLI: [tidbcloud-cli](https://github.com/tidbcloud/tidbcloud-cli)
 - Official code samples in Go and Python: [tidbcloud-api-samples](https://github.com/tidbcloud/tidbcloud-api-samples)
