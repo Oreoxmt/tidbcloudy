@@ -1,27 +1,27 @@
 # Python SDK for TiDB Cloud
 
-`tidbcloudy` is an **unofficial** Python SDK for [TiDB Cloud](https://tidbcloud.com).
+`tidbcloudy` is an **unofficial** Python SDK for [TiDB Cloud](https://tidbcloud.com). If you encounter any problems or have suggestions, feel free to open an issue on the GitHub repository [Oreoxmt/tidbcloudy](https://github.com/Oreoxmt/tidbcloudy).
 
 ## Table of contents
 
-- [Introduction](#introduction)
+- [Introduction](https://github.com/Oreoxmt/tidbcloudy#introduction)
 
-    - [Compatibility with TiDB Cloud API](#compatibility-with-tidb-cloud-api)
-    - [Enhancements comparing to original TiDB Cloud API](#enhancements-comparing-to-original-tidb-cloud-api)
+    - [Compatibility with TiDB Cloud API](https://github.com/Oreoxmt/tidbcloudy#compatibility-with-tidb-cloud-api)
+    - [Enhancements comparing to original TiDB Cloud API](https://github.com/Oreoxmt/tidbcloudy#enhancements-comparing-to-original-tidb-cloud-api)
 
-- [Installation](#installation)
-- [Usage](#usage)
+- [Installation](https://github.com/Oreoxmt/tidbcloudy#installation)
+- [Usage](https://github.com/Oreoxmt/tidbcloudy#usage)
 
-    - [Prerequisites](#prerequisites)
-    - [List all resources in your organization](#list-all-resources-in-your-organization)
-    - [Create a cluster](#create-a-cluster)
-    - [Connect to TiDB](#connect-to-tidb)
-    - [Modify a cluster](#modify-a-cluster)
-    - [Backup and restore](#backup-and-restore)
-    - [Pause or resume your cluster](#pause-or-resume-your-cluster)
-    - [Delete all resources](#delete-all-resources)
+    - [Prerequisites](https://github.com/Oreoxmt/tidbcloudy#prerequisites)
+    - [List all resources in your organization](https://github.com/Oreoxmt/tidbcloudy#list-all-resources-in-your-organization)
+    - [Create a cluster](https://github.com/Oreoxmt/tidbcloudy#create-a-cluster)
+    - [Connect to TiDB](https://github.com/Oreoxmt/tidbcloudy#connect-to-tidb)
+    - [Modify a cluster](https://github.com/Oreoxmt/tidbcloudy#modify-a-cluster)
+    - [Backup and restore](https://github.com/Oreoxmt/tidbcloudy#backup-and-restore)
+    - [Pause or resume your cluster](https://github.com/Oreoxmt/tidbcloudy#pause-or-resume-your-cluster)
+    - [Delete all resources](https://github.com/Oreoxmt/tidbcloudy#delete-all-resources)
 
-- [Related projects](#related-projects)
+- [Related projects](https://github.com/Oreoxmt/tidbcloudy#related-projects)
 
 ## Introduction
 

@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "tidbcloudy"
-version = "1.0.3"
-description = "Python SDK for TiDB Cloud"
+version = "1.0.4"
+description = "(Unofficial) Python SDK for TiDB Cloud"
 readme = "README.md"
 authors = ["Aolin <aolinz@outlook.com>"]
+repository = "https://github.com/Oreoxmt/tidbcloudy"
+documentation = "https://github.com/Oreoxmt/tidbcloudy#readme"
 
 [tool.poetry.dependencies]
 python = "^3.7"
