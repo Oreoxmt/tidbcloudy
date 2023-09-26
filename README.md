@@ -35,7 +35,7 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 - manage your TiDB Cloud **projects** (only _list_ is supported now)
 - list all available cloud providers (AWS and GCP), regions and specifications before creating or modifying a cluster
-- manage your Serverless Tier or Dedicated Tier **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
+- manage your TiDB Serverless or TiDB Dedicated **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
 - manage your **backups** of a cluster (_create_, _get_, _list_, _delete_)
 - manage your **restores** of a project (_create_, _get_, _list_)
 
@@ -150,11 +150,11 @@ for spec in api.list_provider_regions():
 >
 > Creating a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details).
 
-To create a Serverless Tier cluster, run the [`2_1_create_serverless_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_serverless_cluster.py).
+To create a TiDB Serverless cluster, run the [`2_1_create_serverless_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_serverless_cluster.py).
 
-To create a Dedicated Tier cluster, run the [`2_2_create_dedicated_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_2_create_dedicated_cluster.py).
+To create a TiDB Dedicated cluster, run the [`2_2_create_dedicated_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_2_create_dedicated_cluster.py).
 
-The following takes creating a Serverless Tier cluster as an example:
+The following takes creating a TiDB Serverless cluster as an example:
 
 ```python
 import os
