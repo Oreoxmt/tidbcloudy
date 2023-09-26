@@ -212,11 +212,13 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
                                database=database)
 
     def __repr__(self):
-        if self.status.cluster_status == ClusterStatus.CREATING.value:
-            return "<Cluster id={} CREATING>".format(self.id)
+        base_repr = f"<Cluster id={self.id}"
+        if self.status is None:
+            return f"{base_repr} Unknown status>"
+        elif self.status.cluster_status == ClusterStatus.CREATING.value:
+            return f"{base_repr} CREATING>"
         elif self.cluster_type is None:
-            return "<Cluster id={} name={}>".format(self.id, self.name)
+            return f"{base_repr} name={self.name}>"
         else:
-            return "<Cluster id={} name={} type={} create_at={}>".format(
-                self.id, self.name, self.cluster_type.value,
-                timestamp_to_string(self.create_timestamp))
+            return (f"{base_repr} name={self.name} type={self.cluster_type.value}"
+                    f" create_at={timestamp_to_string(self.create_timestamp)}>")
