@@ -175,13 +175,12 @@ config\
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
     .set_region("us-west-2") \
-    .set_root_password("your_root_password") \
-    .add_ip_access(cidr="0.0.0.0/0") \
-    .add_current_ip_access()
+    .set_root_password("your_root_password")
 cluster = project.create_cluster(config)
 print(cluster)
 
-cluster.wait_for_available()
+cluster.wait_for_available(interval_sec=1)
+print(cluster)
 ```
 
 ### Connect to TiDB

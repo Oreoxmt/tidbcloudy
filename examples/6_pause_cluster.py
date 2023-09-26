@@ -6,8 +6,8 @@ from tidbcloudy.specification import ClusterStatus
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
 debug_mode = os.environ.get("TIDBCLOUDY_LOG")
-project_id = "1234567890123456789"
-cluster_id = "1234567890123456789"
+project_id = "1372813089206751385"
+cluster_id = "1379661944646412338"
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)

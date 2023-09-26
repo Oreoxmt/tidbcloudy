@@ -6,8 +6,8 @@ from tidbcloudy.specification import ClusterStatus
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
 debug_mode = os.environ.get("TIDBCLOUDY_LOG")
-project_id = "1234567890123456789"
-cluster_id = "1234567890123456789"
+project_id = "1372813089206751385"
+cluster_id = "10912822641423447137"
 
 print("Connecting to TiDB Cloud...")
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
@@ -17,7 +17,7 @@ print(cluster)
 
 if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
     connection_strings = cluster.status.connection_strings
-    connection = cluster.connect(type="standard", database="test", password="your_root_password")
+    connection = cluster.connect(type="standard", database="test", password="xQXacEZAoomvb9BN")
     print(connection)
     with connection:
         with connection.cursor() as cursor:
