@@ -8,6 +8,6 @@ def get_current_ip_address() -> str:
     for addr in addrs:
         ipv4_addr = addr[4][0]
         resp = requests.get("http://" + ipv4_addr + "/ip", headers={"Host": host})
-        if resp.ok:
-            return resp.text.strip()
+        resp.raise_for_status()
+        return resp.text.strip()
     raise Exception("Failed to get current ip address")
