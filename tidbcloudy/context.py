@@ -1,5 +1,4 @@
-from requests.auth import HTTPDigestAuth
-import requests
+import httpx
 from tidbcloudy.exception import TiDBCloudResponseException
 
 
@@ -16,24 +15,22 @@ class Context:
             private_key: your private key to access to TiDB Cloud
             base_url: the base_url of TiDB Cloud API, you can change this for internal testing.
         """
-        self._session = requests.Session()
-        self._session.auth = HTTPDigestAuth(public_key, private_key)
+        self._client = httpx.Client()
+        self._client.auth = httpx.DigestAuth(public_key, private_key)
         self._base_url = base_url
         if self._base_url[-1] != "/":
             self._base_url += "/"
 
     def _call_api(self, method: str, path: str, **kwargs) -> dict:
-        resp = self._session.request(method=method, url=self._base_url + path, **kwargs)
-        if resp.ok:
-            return resp.json()
         try:
-            content = resp.json()
-            raise TiDBCloudResponseException(
-                resp.status_code, content.get("code"),
-                resp.reason if content.get("message") is None else content["message"])
-        except requests.exceptions.JSONDecodeError:
-            content = resp.text
-            raise TiDBCloudResponseException(resp.status_code, message=content)
+            resp = self._client.request(method=method, url=self._base_url + path, **kwargs)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.RequestError as exc:
+            raise TiDBCloudResponseException(status="Error",
+                                             message=f"An error occurred when requesting {exc.request.url}")
+        except httpx.HTTPStatusError as exc:
+            raise TiDBCloudResponseException(status=exc.response.status_code, message=exc.response.text)
 
     def call_get(self, path: str, *, params: dict = None) -> dict:
         resp = self._call_api(method="GET", path=path, params=params)

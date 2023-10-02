@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tidbcloudy"
-version = "1.0.6"
+version = "1.0.7"
 description = "(Unofficial) Python SDK for TiDB Cloud"
 readme = "README.md"
 authors = ["Aolin <aolinz@outlook.com>"]
@@ -9,9 +9,9 @@ documentation = "https://github.com/Oreoxmt/tidbcloudy#readme"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-requests = "^2.27.1"
 mysqlclient = "^2.1.1"
 deprecation = "^2.1.0"
+httpx = "^0.24.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
