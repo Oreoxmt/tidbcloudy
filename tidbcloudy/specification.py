@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union, List
+from typing import List, Union
 
 from ._base import TiDBCloudyBase, TiDBCloudyField, TiDBCloudyListField
 from .util.ip import get_current_ip_address
@@ -122,8 +122,8 @@ class TiDBNodeMap(TiDBCloudyBase):
 
 
 class TiKVNodeMap(TiDBCloudyBase):
-    __slots__ = [
-        "_node_name", "_availability_zone", "_node_size", "_vcpu_num", "_ram_bytes", "_storage_size_gib", "_status"]
+    __slots__ = ["_node_name", "_availability_zone", "_node_size", "_vcpu_num", "_ram_bytes", "_storage_size_gib",
+                 "_status"]
 
     node_name: str = TiDBCloudyField(str)
     availability_zone: str = TiDBCloudyField(str)
@@ -265,34 +265,17 @@ class CreateClusterConfig:
         return self
 
     def to_object(self) -> dict:
-        return {
-            "name": self._name if self._name is not None else "",
-            "cluster_type": self._cluster_type,
-            "cloud_provider": self._cloud_provider,
-            "region": self._region,
-            "config": {
-                "root_password": self._root_password,
-                "port": self._port,
-                "components": {
-                    "tidb": {
-                        "node_size": self._tidb.node_size,
-                        "node_quantity": self._tidb.node_quantity
-                    } if self._tidb is not None else None,
-                    "tikv": {
-                        "node_size": self._tikv.node_size,
-                        "node_quantity": self._tikv.node_quantity,
-                        "storage_size_gib": self._tikv.storage_size_gib
-                    } if self._tikv is not None else None,
-                    "tiflash": {
-                        "node_size": self._tiflash.node_size,
-                        "node_quantity": self._tiflash.node_quantity,
-                        "storage_size_gib": self._tiflash.storage_size_gib
-                    } if self._tiflash is not None else None
-                },
-                "ip_access_list": [
-                    item.to_object() for item in self._ip_access_list] if self._ip_access_list is not None else None
-            }
-        }
+        return {"name": self._name if self._name is not None else "", "cluster_type": self._cluster_type,
+                "cloud_provider": self._cloud_provider, "region": self._region,
+                "config": {"root_password": self._root_password, "port": self._port, "components": {
+                    "tidb": {"node_size": self._tidb.node_size,
+                             "node_quantity": self._tidb.node_quantity} if self._tidb is not None else None,
+                    "tikv": {"node_size": self._tikv.node_size, "node_quantity": self._tikv.node_quantity,
+                             "storage_size_gib": self._tikv.storage_size_gib} if self._tikv is not None else None,
+                    "tiflash": {"node_size": self._tiflash.node_size, "node_quantity": self._tiflash.node_quantity,
+                                "storage_size_gib": self._tiflash.storage_size_gib} if self._tiflash is not None else None},
+                           "ip_access_list": [item.to_object() for item in
+                                              self._ip_access_list] if self._ip_access_list is not None else None}}
 
 
 class UpdateClusterConfig:
@@ -340,11 +323,7 @@ class UpdateClusterConfig:
             if self._tiflash.storage_size_gib is not None:
                 components["tiflash"]["storage_size_gib"] = self._tiflash.storage_size_gib
 
-        return {
-            "config": {
-                "components": components
-            }
-        }
+        return {"config": {"components": components}}
 
 
 class ClusterInfo(TiDBCloudyBase):
@@ -355,10 +334,9 @@ class ClusterInfo(TiDBCloudyBase):
     connection_strings: ConnectionStrings = TiDBCloudyField(ConnectionStrings)
 
     def __repr__(self):
-        return "<tidb={} status= {} default user={}>".format(
-            self.tidb_version,
-            self.cluster_status.value if self.cluster_status is not None else None,
-            self.connection_strings.default_user)
+        return "<tidb={} status= {} default user={}>".format(self.tidb_version,
+                                                             self.cluster_status.value if self.cluster_status is not None else None,
+                                                             self.connection_strings.default_user)
 
 
 # noinspection PyShadowingBuiltins
@@ -373,6 +351,76 @@ class ClusterInfoOfRestore(TiDBCloudyBase):
                                                     self.status.value if self.status is not None else None)
 
 
+class BillingBase(TiDBCloudyBase):
+    __slots__ = ["_credits", "_discounts", "_runningTotal", "_totalCost"]
+    credits: str = TiDBCloudyField(str)
+    discounts: str = TiDBCloudyField(str)
+    runningTotal: str = TiDBCloudyField(str)
+    totalCost: str = TiDBCloudyField(str)
+
+
+class BillingMonthOverview(BillingBase):
+    __slots__ = ["_billedMonth"] + BillingBase.__slots__
+    billedMonth: str = TiDBCloudyField(str)
+
+    def __repr__(self):
+        return "<BillingMonthOverview billed_month={} credits={} running_total={} total_cost={}>".format(
+            self.billedMonth, self.credits, self.runningTotal, self.totalCost)
+
+
+class BillingOtherCharges(BillingBase):
+    __slots__ = ["_chargeName"] + BillingBase.__slots__
+    chargeName: str = TiDBCloudyField(str)
+
+    def __repr__(self):
+        return "<BillingOtherCharges charge_name={} credits={} running_total={} total_cost={}>".format(self.chargeName,
+                                                                                                       self.credits,
+                                                                                                       self.runningTotal,
+                                                                                                       self.totalCost)
+
+
+class BillingProjectCharges(BillingBase):
+    __slots__ = ["_projectName"] + BillingBase.__slots__
+    projectName: str = TiDBCloudyField(str)
+
+    def __repr__(self):
+        return "<BillingProjectCharges project_name={} credits={} running_total={} total_cost={}>".format(
+            self.projectName, self.credits, self.runningTotal, self.totalCost)
+
+
+class BillingMonthSummaryByProject(TiDBCloudyBase):
+    __slots__ = ["_otherCharges", "_projects"]
+    otherCharges: list = TiDBCloudyListField(BillingOtherCharges)
+    projects: list = TiDBCloudyListField(BillingProjectCharges)
+
+    def __repr__(self):
+        return "<BillingMonthSummaryByProject other_charges={} projects={}>".format(self.otherCharges, self.projects)
+
+
+class BillingServiceCost(TiDBCloudyBase):
+    __slots__ = []
+
+
+class BillingMonthSummaryByService(TiDBCloudyBase):
+    __slots__ = ["_serviceCosts", "_serviceName"]
+    serviceCosts: List[dict] = TiDBCloudyListField(BillingServiceCost)
+    serviceName: str = TiDBCloudyField(str)
+
+    def __repr__(self):
+        return "<BillingMonthSummaryByService service_name={} service_costs={}>".format(self.serviceName,
+                                                                                        self.serviceCosts)
+
+
+class BillingMonthSummary(TiDBCloudyBase):
+    __slots__ = ["_overview", "_summaryByProject", "_summaryByService"]
+    overview: BillingMonthOverview = TiDBCloudyField(BillingMonthOverview)
+    summaryByProject: BillingMonthSummaryByProject = TiDBCloudyField(BillingMonthSummaryByProject)
+    summaryByService: BillingMonthSummaryByService = TiDBCloudyListField(BillingMonthSummaryByService)
+
+    def __repr__(self):
+        return "<BillingMonthSummary month={}>".format(self.overview.billedMonth)
+
+
 class CloudSpecification(TiDBCloudyBase):
     __slots__ = ["_cluster_type", "_cloud_provider", "_region", "_tidb", "_tikv", "_tiflash"]
     cluster_type: ClusterType = TiDBCloudyField(ClusterType)
@@ -385,5 +433,4 @@ class CloudSpecification(TiDBCloudyBase):
     def __repr__(self):
         return "<Specification cluster_type={} cloud_provider={} region={}>".format(
             self.cluster_type.value if self.cluster_type is not None else None,
-            self.cloud_provider.value if self.cloud_provider is not None else None,
-            self.region)
+            self.cloud_provider.value if self.cloud_provider is not None else None, self.region)
