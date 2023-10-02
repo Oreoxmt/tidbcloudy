@@ -35,7 +35,7 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 - manage your TiDB Cloud **projects** (only _list_ is supported now)
 - list all available cloud providers (AWS and GCP), regions and specifications before creating or modifying a cluster
-- manage your Serverless Tier or Dedicated Tier **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
+- manage your TiDB Serverless or TiDB Dedicated **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
 - manage your **backups** of a cluster (_create_, _get_, _list_, _delete_)
 - manage your **restores** of a project (_create_, _get_, _list_)
 
@@ -43,11 +43,12 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 `tidbcloudy` is compatible with [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta). **Endpoints added in [Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228) and [Release 20230328](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328) are not supported for now**. The following table lists the supported API versions:
 
-| tidbcloudy                                                         | TiDB Cloud API                                                                                          |
-|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1), [1.0.2](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.2), [1.0.3](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.3) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028), [Release 20230104](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230104), [Release 20230214](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230214), [Release 20230321](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230321)|
+| tidbcloudy | TiDB Cloud API |
+|---|---|
+| [1.0.5](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.5) | v1beta [Release 20230602](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230602), [Release 20230801](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230801) |
+| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1), [1.0.2](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.2), [1.0.3](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.3), [1.0.4](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.4) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028), [Release 20230104](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230104), [Release 20230214](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230214), [Release 20230321](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230321) |
 | [1.0.0](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0) | v1beta [Release 20220823](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823) |
-| [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1) | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809) |                                                                          |
+| [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1) | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809) |
 
 ### Enhancements comparing to original [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta)
 
@@ -150,11 +151,11 @@ for spec in api.list_provider_regions():
 >
 > Creating a cluster might cost money. For more details, see [TiDB Cloud pricing details](https://www.pingcap.com/tidb-cloud-pricing-details).
 
-To create a Serverless Tier cluster, run the [`2_1_create_serverless_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_serverless_cluster.py).
+To create a TiDB Serverless cluster, run the [`2_1_create_serverless_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_1_create_serverless_cluster.py).
 
-To create a Dedicated Tier cluster, run the [`2_2_create_dedicated_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_2_create_dedicated_cluster.py).
+To create a TiDB Dedicated cluster, run the [`2_2_create_dedicated_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/2_2_create_dedicated_cluster.py).
 
-The following takes creating a Serverless Tier cluster as an example:
+The following takes creating a TiDB Serverless cluster as an example:
 
 ```python
 import os
@@ -175,13 +176,12 @@ config\
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
     .set_region("us-west-2") \
-    .set_root_password("your_root_password") \
-    .add_ip_access(cidr="0.0.0.0/0") \
-    .add_current_ip_access()
+    .set_root_password("your_root_password")
 cluster = project.create_cluster(config)
 print(cluster)
 
-cluster.wait_for_available()
+cluster.wait_for_available(interval_sec=1)
+print(cluster)
 ```
 
 ### Connect to TiDB

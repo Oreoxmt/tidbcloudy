@@ -6,14 +6,14 @@ from tidbcloudy.specification import CreateClusterConfig
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
 debug_mode = os.environ.get("TIDBCLOUDY_LOG")
-project_id = "1234567890123456789"
+project_id = "1372813089206751385"
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
 
 config = CreateClusterConfig()
 config\
-    .set_name("serverless-0") \
+    .set_name("serverless-test") \
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
     .set_region("us-west-2") \
@@ -23,4 +23,5 @@ config\
 cluster = project.create_cluster(config)
 print(cluster)
 
-cluster.wait_for_available()
+cluster.wait_for_available(interval_sec=1)
+print(cluster)

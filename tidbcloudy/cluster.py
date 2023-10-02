@@ -4,8 +4,7 @@ import MySQLdb
 from typing import Union, Iterator
 
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
-from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, \
-    ClusterStatus
+from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, ClusterStatus
 from .backup import Backup
 from .util.log import log
 from .util.timestamp import timestamp_to_string
@@ -84,22 +83,14 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
 
     def pause(self):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
-        config = {
-            "config": {
-                "paused": True
-            }
-        }
+        config = {"config": {"paused": True}}
         self.context.call_patch(path=path, json=config)
         self._update_info_from_server()
         log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
 
     def resume(self):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
-        config = {
-            "config": {
-                "paused": False
-            }
-        }
+        config = {"config": {"paused": False}}
         self.context.call_patch(path=path, json=config)
         self._update_info_from_server()
         log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
@@ -121,9 +112,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
 
         """
         path = "projects/{}/clusters/{}/backups".format(self.project_id, self.id)
-        config = {
-            "name": name
-        }
+        config = {"name": name}
         if description is not None:
             config["description"] = description
         resp = self.context.call_post(path=path, json=config)
@@ -180,11 +169,8 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             query["page_size"] = page_size
         resp = self.context.call_get(path=path, params=query)
         return Page(
-            [Backup.from_object(
-                self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup}
-            ) for backup in resp["items"]],
-            page, page_size, resp["total"]
-        )
+            [Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup}) for
+                backup in resp["items"]], page, page_size, resp["total"])
 
     def get_backup(self, backup_id: str) -> Backup:
         """
@@ -206,17 +192,17 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         if connection_strings is None:
             raise ValueError("No connection strings found for type {}".format(type))
         connection_string = connection_strings[type]
-        return MySQLdb.connect(host=connection_string["host"],
-                               port=connection_string["port"],
-                               user=user, password=password,
-                               database=database)
+        return MySQLdb.connect(host=connection_string["host"], port=connection_string["port"], user=user,
+                               password=password, database=database)
 
     def __repr__(self):
-        if self.status.cluster_status == ClusterStatus.CREATING.value:
-            return "<Cluster id={} CREATING>".format(self.id)
+        base_repr = f"<Cluster id={self.id}"
+        if self.status is None:
+            return f"{base_repr} Unknown status>"
+        elif self.status.cluster_status == ClusterStatus.CREATING.value:
+            return f"{base_repr} CREATING>"
         elif self.cluster_type is None:
-            return "<Cluster id={} name={}>".format(self.id, self.name)
+            return f"{base_repr} name={self.name}>"
         else:
-            return "<Cluster id={} name={} type={} create_at={}>".format(
-                self.id, self.name, self.cluster_type.value,
-                timestamp_to_string(self.create_timestamp))
+            return (f"{base_repr} name={self.name} type={self.cluster_type.value}"
+                    f" create_at={timestamp_to_string(self.create_timestamp)}>")

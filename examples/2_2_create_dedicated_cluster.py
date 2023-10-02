@@ -6,7 +6,7 @@ from tidbcloudy.specification import CreateClusterConfig
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
 debug_mode = os.environ.get("TIDBCLOUDY_LOG")
-project_id = "1234567890123456789"
+project_id = "1372813089206751385"
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
@@ -19,8 +19,8 @@ config\
     .set_region("us-west-2") \
     .set_port(4399) \
     .set_root_password("your_root_password") \
-    .set_component("tidb", "8C16G", 1) \
-    .set_component("tikv", "8C32G", 3, 500) \
+    .set_component("tidb", "4C16G", 1) \
+    .set_component("tikv", "4C16G", 3, 200) \
     .add_current_ip_access()
 cluster = project.create_cluster(config)
 print(cluster)
