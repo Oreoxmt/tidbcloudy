@@ -33,12 +33,16 @@ class Context:
         resp = self._call_api(method="GET", path=path, base_url=base_url, params=params)
         return resp
 
-    def call_post(self, path: str, base_url: str = V1BETA.HOST.value, *, data: dict = None,
+    def call_post(self, path: str, base_url: str = V1BETA.HOST.value,
+                  *,
+                  data: dict = None,
                   json: dict = None) -> dict:
         resp = self._call_api(method="POST", path=path, base_url=base_url, data=data, json=json)
         return resp
 
-    def call_patch(self, path: str, base_url: str = V1BETA.HOST.value, *, data: dict = None,
+    def call_patch(self, path: str, base_url: str = V1BETA.HOST.value,
+                   *,
+                   data: dict = None,
                    json: dict = None) -> dict:
         resp = self._call_api(method="PATCH", path=path, base_url=base_url, data=data, json=json)
         return resp
