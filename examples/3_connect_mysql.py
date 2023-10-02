@@ -17,7 +17,8 @@ print(cluster)
 
 if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
     connection_strings = cluster.status.connection_strings
-    connection = cluster.connect(type="standard", database="test", password=os.environ.get("CLUSTER_PWD", "your_root_password"))
+    connection = cluster.connect(type="standard", database="test",
+                                 password=os.environ.get("CLUSTER_PWD", "your_root_password"))
     print(connection)
     with connection:
         with connection.cursor() as cursor:
