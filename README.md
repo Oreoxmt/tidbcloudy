@@ -43,12 +43,12 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 `tidbcloudy` is compatible with [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta). **Endpoints added in [Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228) and [Release 20230328](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328) are not supported for now**. The following table lists the supported API versions:
 
-| tidbcloudy | TiDB Cloud API |
-|---|---|
-| [1.0.5](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.5) | v1beta [Release 20230602](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230602), [Release 20230801](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230801) |
+| tidbcloudy                                                                                                                                                                                                                                                                     | TiDB Cloud API |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| [1.0.5](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.5), [1.0.6](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.6)                                                                                                                                         | v1beta [Release 20230602](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230602), [Release 20230801](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230801) |
 | [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1), [1.0.2](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.2), [1.0.3](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.3), [1.0.4](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.4) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028), [Release 20230104](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230104), [Release 20230214](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230214), [Release 20230321](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230321) |
-| [1.0.0](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0) | v1beta [Release 20220823](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823) |
-| [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1) | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809) |
+| [1.0.0](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0)                                                                                                                                                                                                             | v1beta [Release 20220823](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823) |
+| [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1)                                                                                                                                                                                                             | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809) |
 
 ### Enhancements comparing to original [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta)
 
@@ -165,7 +165,7 @@ from tidbcloudy.specification import CreateClusterConfig
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
 debug_mode = os.environ.get("TIDBCLOUDY_LOG")
-project_id = "1234567890123456789"
+project_id = os.environ.get("PROJECT_ID", "1234567890123456789")
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
@@ -196,8 +196,8 @@ from tidbcloudy.specification import ClusterStatus
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
-project_id = "1234567890123456789"
-cluster_id = "1234567890123456789"
+project_id = os.environ.get("PROJECT_ID", "1234567890123456789")
+cluster_id = os.environ.get("CLUSTER_ID", "1234567890123456789")
 
 print("Connecting to TiDB Cloud...")
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
@@ -207,7 +207,7 @@ print(cluster)
 
 if cluster.status.cluster_status == ClusterStatus.AVAILABLE:
     connection_strings = cluster.status.connection_strings
-    connection = cluster.connect(type="standard", database="test", password="your_root_password")
+    connection = cluster.connect(type="standard", database="test", password=os.environ.get("CLUSTER_PWD", "your_root_password"))
     print(connection)
     with connection:
         with connection.cursor() as cursor:
@@ -232,8 +232,8 @@ from tidbcloudy.specification import UpdateClusterConfig
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
-project_id = "1234567890123456789"
-cluster_id = "1234567890123456789"
+project_id = os.environ.get("PROJECT_ID", "1234567890123456789")
+cluster_id = os.environ.get("CLUSTER_ID", "1234567890123456789")
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
@@ -265,8 +265,8 @@ from tidbcloudy.specification import CreateClusterConfig
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
-project_id = "1234567890123456789"
-cluster_id = "1234567890123456789"
+project_id = os.environ.get("PROJECT_ID", "1234567890123456789")
+cluster_id = os.environ.get("CLUSTER_ID", "1234567890123456789")
 backup_id = "1234567"
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
@@ -307,8 +307,8 @@ from tidbcloudy.specification import ClusterStatus
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
-project_id = "1234567890123456789"
-cluster_id = "1234567890123456789"
+project_id = os.environ.get("PROJECT_ID", "1234567890123456789")
+cluster_id = os.environ.get("CLUSTER_ID", "1234567890123456789")
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
@@ -341,7 +341,7 @@ from tidbcloudy.specification import ClusterType
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
-project_id = "1234567890123456789"
+project_id = os.environ.get("PROJECT_ID", "1234567890123456789")
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
