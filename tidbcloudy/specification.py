@@ -369,9 +369,6 @@ class ProjectAWSCMEK(TiDBCloudyBase):
     region: str = None
     kms_arn: str = None
 
-    def to_object(self) -> dict:
-        return {"region": self.region, "kms_arn": self.kms_arn}
-
     def __repr__(self):
         return "<region={}, kms_arn={}>".format(
             self.region, self.kms_arn)

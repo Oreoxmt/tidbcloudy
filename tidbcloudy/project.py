@@ -268,7 +268,10 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
             "specs": []
         }
         for region, kms_arn in config:
-            payload["specs"].append(ProjectAWSCMEK(region=region, kms_arn=kms_arn).to_object())
+            payload["specs"].append({
+                "region": region,
+                "kms_arn": kms_arn
+            })
         path = f"projects/{self.id}/aws-cmek"
         self.context.call_post(path=path, json=payload)
 
