@@ -18,7 +18,8 @@
     - [Connect to TiDB](https://github.com/Oreoxmt/tidbcloudy#connect-to-tidb)
     - [Modify a cluster](https://github.com/Oreoxmt/tidbcloudy#modify-a-cluster)
     - [Backup and restore](https://github.com/Oreoxmt/tidbcloudy#backup-and-restore)
-    - [Pause or resume your cluster](https://github.com/Oreoxmt/tidbcloudy#pause-or-resume-your-cluster)
+    - [Pause or resume your cluster](https://github.com/Oreoxmt/tidbcloudy#pause-or-resume-your-cluster) **New in 1.0.0**
+    - [Get monthly bills of your organization](https://github.com/Oreoxmt/tidbcloudy#get-monthly-bills-of-your-organization) **New in 1.0.8**
     - [Delete all resources](https://github.com/Oreoxmt/tidbcloudy#delete-all-resources)
 
 - [Related projects](https://github.com/Oreoxmt/tidbcloudy#related-projects)
@@ -31,8 +32,9 @@ For more information about TiDB Cloud API, see [TiDB Cloud API Documentation](ht
 
 If you do not have a TiDB Cloud account yet, you can sign up [here](https://tidbcloud.com). For more details about TiDB Cloud, refer to [TiDB Cloud Documentation](https://docs.pingcap.com/tidbcloud).
 
-You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage your projects, clusters, backups and restores:
+You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage your billings, projects, clusters, backups and restores:
 
+- manage your **billings** of your organization (_get_)
 - manage your TiDB Cloud **projects** (only _list_ is supported now)
 - list all available cloud providers (AWS and GCP), regions and specifications before creating or modifying a cluster
 - manage your TiDB Serverless or TiDB Dedicated **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
@@ -324,6 +326,29 @@ if cluster.status.cluster_status == ClusterStatus.PAUSED:
 if cluster.status.cluster_status == ClusterStatus.RESUMING:
     print("Wait for the RESUMING cluster id={} to be available".format(cluster_id))
     cluster.wait_for_available()
+```
+
+### Get monthly bills of your organization
+
+To get the billing information of your organization, run the [`v1beta1_get_monthly_bill.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/v1beta1_get_monthly_bill.py).
+
+```python
+import os
+
+import tidbcloudy
+
+public_key = os.environ.get("PUBLIC_KEY")
+private_key = os.environ.get("PRIVATE_KEY")
+debug_mode = os.environ.get("TIDBCLOUDY_LOG")
+
+api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
+billing = api.get_monthly_bill(month="2023-10")
+# billing = api.get_monthly_bill(month="202310")
+# billing = api.get_current_month_bill()
+print(billing)
+print(billing.overview)
+print(billing.summaryByProject)
+print(billing.summaryByService)
 ```
 
 ### Delete all resources
