@@ -18,37 +18,264 @@
     - [Connect to TiDB](https://github.com/Oreoxmt/tidbcloudy#connect-to-tidb)
     - [Modify a cluster](https://github.com/Oreoxmt/tidbcloudy#modify-a-cluster)
     - [Backup and restore](https://github.com/Oreoxmt/tidbcloudy#backup-and-restore)
-    - [Pause or resume your cluster](https://github.com/Oreoxmt/tidbcloudy#pause-or-resume-your-cluster)
+    - [Pause or resume your cluster](https://github.com/Oreoxmt/tidbcloudy#pause-or-resume-your-cluster) **New in 1.0.0**
+    - [Get monthly bills of your organization](https://github.com/Oreoxmt/tidbcloudy#get-monthly-bills-of-your-organization) **New in 1.0.8**
     - [Delete all resources](https://github.com/Oreoxmt/tidbcloudy#delete-all-resources)
 
 - [Related projects](https://github.com/Oreoxmt/tidbcloudy#related-projects)
 
 ## Introduction
 
-For more information about TiDB Cloud API, see [TiDB Cloud API Documentation](https://docs.pingcap.com/tidbcloud/api/v1beta).
+For more information about TiDB Cloud API, see TiDB Cloud API Documentation ([v1beta](https://docs.pingcap.com/tidbcloud/api/v1beta) and [v1beta1](https://docs.pingcap.com/tidbcloud/api/v1beta1)).
 
 > TiDB Cloud is a fully-managed Database-as-a-Service (DBaaS) that brings everything great about TiDB to your cloud.
 
 If you do not have a TiDB Cloud account yet, you can sign up [here](https://tidbcloud.com). For more details about TiDB Cloud, refer to [TiDB Cloud Documentation](https://docs.pingcap.com/tidbcloud).
 
-You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage your projects, clusters, backups and restores:
+You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage your billings, projects, clusters, backups and restores:
 
+- manage your **billings** of your organization (_get_)
 - manage your TiDB Cloud **projects** (only _list_ is supported now)
-- list all available cloud providers (AWS and GCP), regions and specifications before creating or modifying a cluster
+- list all available cloud providers (AWS and GCP), regions, and specifications before creating or modifying a cluster
 - manage your TiDB Serverless or TiDB Dedicated **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
 - manage your **backups** of a cluster (_create_, _get_, _list_, _delete_)
 - manage your **restores** of a project (_create_, _get_, _list_)
 
 ### Compatibility with TiDB Cloud API
 
-`tidbcloudy` is compatible with [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta). **Endpoints added in [Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228) and [Release 20230328](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328) are not supported for now**. The following table lists the supported API versions:
+`tidbcloudy` is compatible with TiDB Cloud API. **Endpoints added in [v1beta Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228), [v1beta Release 20230328](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328), and [v1beta Release 20230905](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230905) are not supported for now**. The following table lists the compatibility between `tidbcloudy` and TiDB Cloud API.
 
-| tidbcloudy                                                                                                                                                                                                                                                                     | TiDB Cloud API                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [1.0.5](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.5), [1.0.6](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.6), [1.0.7](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.7)                                                                     | v1beta [Release 20230602](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230602), [Release 20230801](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230801)                                                                                                                                                                                                                                                                                                                                                                                                         |
-| [1.0.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1), [1.0.2](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.2), [1.0.3](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.3), [1.0.4](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.4) | v1beta [Release 20220906](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906), [Release 20220920](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920), [Release 20221028](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028), [Release 20230104](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230104), [Release 20230214](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230214), [Release 20230321](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230321) |
-| [1.0.0](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0)                                                                                                                                                                                                             | v1beta [Release 20220823](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| [0.2.1](https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1)                                                                                                                                                                                                             | v1beta [Release 20220809](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+<table>
+<thead>
+  <tr>
+    <th rowspan="2"></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta1" target="_blank" rel="noopener noreferrer">TiDB Cloud API v1beta1</a></th>
+    <th colspan="13"><a href="https://docs.pingcap.com/tidbcloud/api/v1beta" target="_blank" rel="noopener noreferrer">TiDB Cloud API v1beta</a></th>
+  </tr>
+  <tr>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta1#section/API-Changelog/2023-09-28" target="_blank" rel="noopener noreferrer">2023-09-28</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230905" target="_blank" rel="noopener noreferrer">20230905</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230801" target="_blank" rel="noopener noreferrer">20230801</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230602" target="_blank" rel="noopener noreferrer">20230602</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328" target="_blank" rel="noopener noreferrer">20230328</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230321" target="_blank" rel="noopener noreferrer">20230321</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228" target="_blank" rel="noopener noreferrer">20230228</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230214" target="_blank" rel="noopener noreferrer">20230214</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230104" target="_blank" rel="noopener noreferrer">20230104</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20221028" target="_blank" rel="noopener noreferrer">20221028</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220920" target="_blank" rel="noopener noreferrer">20220920</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220906" target="_blank" rel="noopener noreferrer">20220906</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220823" target="_blank" rel="noopener noreferrer">20220823</a></th>
+    <th><a href="https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20220809" target="_blank" rel="noopener noreferrer">20220809</a></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.8" target="_blank" rel="noopener noreferrer">1.0.8</a></td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.7" target="_blank" rel="noopener noreferrer">1.0.7</a></td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.6" target="_blank" rel="noopener noreferrer">1.0.6</a></td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.5" target="_blank" rel="noopener noreferrer">1.0.5</a></td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.4" target="_blank" rel="noopener noreferrer">1.0.4</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.3" target="_blank" rel="noopener noreferrer">1.0.3</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.2" target="_blank" rel="noopener noreferrer">1.0.2</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.1" target="_blank" rel="noopener noreferrer">1.0.1</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.0" target="_blank" rel="noopener noreferrer">1.0.0</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.2" target="_blank" rel="noopener noreferrer">0.2.2</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.1" target="_blank" rel="noopener noreferrer">0.2.1</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v0.2.0" target="_blank" rel="noopener noreferrer">0.2.0</a></td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>/</td>
+    <td>✅</td>
+  </tr>
+</tbody>
+</table>
 
 ### Enhancements comparing to original [TiDB Cloud API](https://docs.pingcap.com/tidbcloud/api/v1beta)
 
@@ -323,6 +550,29 @@ if cluster.status.cluster_status == ClusterStatus.PAUSED:
 if cluster.status.cluster_status == ClusterStatus.RESUMING:
     print("Wait for the RESUMING cluster id={} to be available".format(cluster_id))
     cluster.wait_for_available()
+```
+
+### Get monthly bills of your organization
+
+To get the billing information of your organization, run the [`v1beta1_get_monthly_bill.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/v1beta1_get_monthly_bill.py).
+
+```python
+import os
+
+import tidbcloudy
+
+public_key = os.environ.get("PUBLIC_KEY")
+private_key = os.environ.get("PRIVATE_KEY")
+debug_mode = os.environ.get("TIDBCLOUDY_LOG")
+
+api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
+billing = api.get_monthly_bill(month="2023-10")
+# billing = api.get_monthly_bill(month="202310")
+# billing = api.get_current_month_bill()
+print(billing)
+print(billing.overview)
+print(billing.summaryByProject)
+print(billing.summaryByService)
 ```
 
 ### Delete all resources

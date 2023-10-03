@@ -1,9 +1,11 @@
 from typing import Iterator, List
 
+from tidbcloudy.baseURL import V1BETA1
 from tidbcloudy.context import Context
 from tidbcloudy.project import Project
-from tidbcloudy.specification import CloudSpecification
+from tidbcloudy.specification import BillingMonthSummary, CloudSpecification
 from tidbcloudy.util.page import Page
+from tidbcloudy.util.timestamp import get_current_year_month
 
 
 class TiDBCloud:
@@ -108,3 +110,41 @@ class TiDBCloud:
         """
         resp = self._context.call_get(path="clusters/provider/regions")
         return [CloudSpecification.from_object(obj=item) for item in resp["items"]]
+
+    def get_monthly_bill(self, month: str) -> BillingMonthSummary:
+        """
+        Get the monthly billing.
+        Args:
+            month: the month of the bill, format: YYYY-MM or YYYYMM.
+        Returns:
+            the monthly billing.
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                billing = api.get_monthly_bill(month="2023-08")
+                print(billing)
+
+        """
+        if "-" not in month and len(month) == 6:
+            month = f"{month[:4]}-{month[4:]}"
+        path = f"bills/{month}"
+        resp = self._context.call_get(path=path, base_url=V1BETA1.BILLING.value)
+        return BillingMonthSummary.from_object(self._context, resp)
+
+    def get_current_month_bill(self) -> BillingMonthSummary:
+        """
+        Get the billing of current month.
+        Returns:
+            the current month billing.
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                billing = api.get_current_month_bill()
+                print(billing)
+
+        """
+        return self.get_monthly_bill(month=get_current_year_month())
