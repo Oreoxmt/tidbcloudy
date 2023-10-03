@@ -12,7 +12,7 @@ api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
 
 config = CreateClusterConfig()
-config\
+config \
     .set_name("serverless-0") \
     .set_cluster_type("DEVELOPER") \
     .set_cloud_provider("AWS") \
