@@ -12,6 +12,35 @@ class TiDBCloud:
     def __init__(self, public_key: str, private_key: str):
         self._context = Context(public_key, private_key)
 
+    def create_project(self, name: str, aws_cmek_enabled: bool = False, update_from_server: bool = False) -> Project:
+        """
+        Create a project.
+        Args:
+            name: the project name.
+            aws_cmek_enabled: whether to enable AWS Customer Managed Encryption Keys.
+            update_from_server: whether to update the project info after creating.
+
+        Returns:
+            If the update_from_server is False, return a Project object with only the context and project_id.
+            If the update_from_server is True, return a Project object with all the info.
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                project = api.create_project(name="your_project_name", aws_cmek_enabled=False, update_from_server=True)
+                print(project)
+        """
+        config = {
+            "name": name,
+            "aws_cmek_enabled": aws_cmek_enabled
+        }
+        resp = self._context.call_post(path="projects", json=config)
+        project_id = resp["id"]
+        if update_from_server:
+            return self.get_project(project_id=project_id, update_from_server=True)
+        return Project(context=self._context, id=project_id)
+
     def get_project(self, project_id: str, update_from_server: bool = False) -> Project:
         """
         Get the project object by project_id.
