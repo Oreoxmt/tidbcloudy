@@ -129,3 +129,19 @@ class TiDBCloud:
         path = f"bills/{month}"
         resp = self._context.call_get(path=path, base_url=V1BETA1.BILLING.value)
         return BillingMonthSummary.from_object(self._context, resp)
+
+    def get_current_month_bill(self) -> BillingMonthSummary:
+        """
+        Get the billing of current month.
+        Returns:
+            the current month billing.
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                billing = api.get_current_month_bill()
+                print(billing)
+
+        """
+        return self.get_monthly_bill(month=get_current_year_month())
