@@ -377,18 +377,6 @@ class ProjectAWSCMEK(TiDBCloudyBase):
             self.region, self.kms_arn)
 
 
-class ProjectAWSCMEKSpecs:
-    def __init__(self):
-        self._specs = []
-
-    def set_cmek(self, region: str, kms_arn: str):
-        self._specs.append(ProjectAWSCMEK(region=region, kms_arn=kms_arn))
-        return self
-
-    def to_object(self) -> dict:
-        return {"specs": [item.to_object() for item in self._specs]}
-
-
 class BillingBase(TiDBCloudyBase):
     __slots__ = ["_credits", "_discounts", "_runningTotal", "_totalCost"]
     credits: str = TiDBCloudyField(str)

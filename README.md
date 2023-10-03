@@ -371,7 +371,6 @@ To create a project, run the [`8_manage_project.py`](https://github.com/Oreoxmt/
 import os
 
 import tidbcloudy
-from tidbcloudy.specification import ProjectAWSCMEKSpecs
 
 public_key = os.environ.get("PUBLIC_KEY")
 private_key = os.environ.get("PRIVATE_KEY")
@@ -383,11 +382,7 @@ project = api.create_project(name="0", aws_cmek_enabled=True, update_from_server
 print(project)
 
 # Configure AWS CMEK for the project
-cmek_config = ProjectAWSCMEKSpecs()
-cmek_config \
-    .set_cmek("your_aws_region_1", "your_aws_kms_arn_1") \
-    .set_cmek("your_aws_region_2", "your_aws_kms_arn_2")
-project.config_aws_cmek(cmek_config)
+project.config_aws_cmek([("your_aws_region_1", "your_aws_kms_arn_1"), ("your_aws_region_2", "your_aws_kms_arn_2")])
 
 # List all AWS CMEKs of the project
 for cmek in project.iter_aws_cmek():

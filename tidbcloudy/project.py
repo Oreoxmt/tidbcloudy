@@ -1,9 +1,9 @@
-from typing import Iterator, Union
+from typing import Iterator, List, Tuple, Union
 
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .cluster import Cluster
 from .restore import Restore
-from .specification import CreateClusterConfig, ProjectAWSCMEK, ProjectAWSCMEKSpecs, UpdateClusterConfig
+from .specification import CreateClusterConfig, ProjectAWSCMEK, UpdateClusterConfig
 from .util.page import Page
 from .util.timestamp import timestamp_to_string
 
@@ -249,28 +249,28 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 yield restore
             page += 1
 
-    def config_aws_cmek(self, config: Union[ProjectAWSCMEKSpecs, dict]) -> None:
+    def config_aws_cmek(self, config: List[Tuple[str, str]]) -> None:
         """
         Configure the AWS Customer-Managed Encryption Keys (CMEK) for the project.
         Args:
-            config: the configuration of the CMEK.
+            config: the configuration of the CMEK. The format is [(region, kms_arn), ...]
 
         Examples:
             .. code-block:: python
                 import tidbcloudy
                 api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
                 project = api.create_project(name="your_project_name", aws_cmek_enabled=True, update_from_server=True)
-                cmek_config = ProjectAWSCMEKSpecs()
-                cmek_config.set_cmek("your_aws_region", "your_aws_kms_arn")\
-                      .set_cmek("your_aws_region", "your_aws_kms_arn")
-                project.config_aws_cmek(cmek_config)
+                project.config_aws_cmek([(region, kms_arn), ...]
                 for cmek in project.iter_aws_cmek():
                     print(cmek)
         """
-        if isinstance(config, ProjectAWSCMEKSpecs):
-            config = config.to_object()
+        payload = {
+            "specs": []
+        }
+        for region, kms_arn in config:
+            payload["specs"].append(ProjectAWSCMEK(region=region, kms_arn=kms_arn).to_object())
         path = f"projects/{self.id}/aws-cmek"
-        self.context.call_post(path=path, json=config)
+        self.context.call_post(path=path, json=payload)
 
     def list_aws_cmek(self) -> Page[ProjectAWSCMEK]:
         """
