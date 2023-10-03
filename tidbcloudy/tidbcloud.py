@@ -5,6 +5,7 @@ from tidbcloudy.context import Context
 from tidbcloudy.project import Project
 from tidbcloudy.specification import BillingMonthSummary, CloudSpecification
 from tidbcloudy.util.page import Page
+from tidbcloudy.util.timestamp import get_current_year_month
 
 
 class TiDBCloud:
@@ -114,7 +115,7 @@ class TiDBCloud:
         """
         Get the monthly billing.
         Args:
-            month: the month of the bill, format: YYYY-MM
+            month: the month of the bill, format: YYYY-MM or YYYYMM.
         Returns:
             the monthly billing.
 
@@ -126,6 +127,8 @@ class TiDBCloud:
                 print(billing)
 
         """
+        if "-" not in month and len(month) == 6:
+            month = f"{month[:4]}-{month[4:]}"
         path = f"bills/{month}"
         resp = self._context.call_get(path=path, base_url=V1BETA1.BILLING.value)
         return BillingMonthSummary.from_object(self._context, resp)

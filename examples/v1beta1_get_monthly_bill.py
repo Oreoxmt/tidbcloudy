@@ -8,6 +8,7 @@ debug_mode = os.environ.get("TIDBCLOUDY_LOG")
 
 api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 billing = api.get_monthly_bill(month="2023-10")
+# billing = api.get_monthly_bill(month="202310")
 # billing = api.get_current_month_bill()
 print(billing)
 print(billing.overview)
