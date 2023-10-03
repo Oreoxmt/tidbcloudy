@@ -17,7 +17,7 @@ class TiDBCloud:
         Create a project.
         Args:
             name: the project name.
-            aws_cmek_enabled: whether to enable AWS Customer Managed Encryption Keys.
+            aws_cmek_enabled: whether to enable AWS Customer-Managed Encryption Keys.
             update_from_server: whether to update the project info after creating.
 
         Returns:
