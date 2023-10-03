@@ -1,22 +1,23 @@
-from typing import Union, Iterator
+from typing import Iterator, List, Tuple, Union
 
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .cluster import Cluster
 from .restore import Restore
-from .specification import CreateClusterConfig, UpdateClusterConfig
-from .util.timestamp import timestamp_to_string
+from .specification import CreateClusterConfig, ProjectAWSCMEK, UpdateClusterConfig
 from .util.page import Page
+from .util.timestamp import timestamp_to_string
 
 
 # noinspection PyShadowingBuiltins
 class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
-    __slots__ = ["_id", "_org_id", "_name", "_cluster_count", "_user_count", "_create_timestamp"]
+    __slots__ = ["_id", "_org_id", "_name", "_cluster_count", "_user_count", "_create_timestamp", "_aws_cmek_enabled"]
     id: str = TiDBCloudyField(str)
     org_id: str = TiDBCloudyField(str)
     name: str = TiDBCloudyField(str)
     cluster_count: int = TiDBCloudyField(int)
     user_count: int = TiDBCloudyField(int)
     create_timestamp: int = TiDBCloudyField(int, convert_from=int, convert_to=str)
+    aws_cmek_enabled: bool = TiDBCloudyField(bool)
 
     def create_cluster(self, config: Union[CreateClusterConfig, dict]) -> Cluster:
         """
@@ -248,6 +249,75 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 yield restore
             page += 1
 
+    def create_aws_cmek(self, config: List[Tuple[str, str]]) -> None:
+        """
+        Configure the AWS Customer-Managed Encryption Keys (CMEK) for the project.
+        Args:
+            config: the configuration of the CMEK. The format is [(region, kms_arn), ...]
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                project = api.create_project(name="your_project_name", aws_cmek_enabled=True, update_from_server=True)
+                project.create_aws_cmek([(region, kms_arn), ...]
+                for cmek in project.iter_aws_cmek():
+                    print(cmek)
+        """
+        payload = {
+            "specs": []
+        }
+        for region, kms_arn in config:
+            payload["specs"].append({
+                "region": region,
+                "kms_arn": kms_arn
+            })
+        path = f"projects/{self.id}/aws-cmek"
+        self.context.call_post(path=path, json=payload)
+
+    def list_aws_cmek(self) -> Page[ProjectAWSCMEK]:
+        """
+        List all AWS Customer-Managed Encryption Keys (CMEK) in the project.
+
+        Returns:
+            The page of the CMEK in the project.
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                project = api.get_project(project_id)
+                cmeks = project.list_aws_cmek()
+                for cmek in cmeks.items:
+                    print(cmek)
+        """
+        path = f"projects/{self.id}/aws-cmek"
+        resp = self.context.call_get(path=path)
+        total = len(resp["items"])
+        return Page(
+            [ProjectAWSCMEK.from_object(self.context, item) for item in resp["items"]],
+            1, total, total)
+
+    def iter_aws_cmek(self) -> Iterator[ProjectAWSCMEK]:
+        """
+        This is not a TiDB Cloud API official endpoint.
+        Iterate all AWS Customer-Managed Encryption Keys (CMEK) in the project.
+
+        Returns:
+            The iterator of the CMEK in the project.
+
+        Examples:
+            .. code-block:: python
+                import tidbcloudy
+                api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
+                project = api.get_project(project_id)
+                for cmek in project.iter_aws_cmek():
+                    print(cmek)
+        """
+        cmeks = self.list_aws_cmek()
+        for cmek in cmeks.items:
+            yield cmek
+
     def __repr__(self):
-        return "<Project id={} name={} create_at={}>".format(
-            self.id, self.name, timestamp_to_string(self.create_timestamp))
+        return "<Project id={} name={} aws_cmek_enabled={} create_at={}>".format(
+            self.id, self.name, self.aws_cmek_enabled, timestamp_to_string(self.create_timestamp))

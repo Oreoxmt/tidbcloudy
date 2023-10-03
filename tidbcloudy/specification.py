@@ -364,6 +364,16 @@ class ClusterInfoOfRestore(TiDBCloudyBase):
             self.status.value if self.status is not None else None)
 
 
+class ProjectAWSCMEK(TiDBCloudyBase):
+    __slots__ = ["_region", "_kms_arn"]
+    region: str = None
+    kms_arn: str = None
+
+    def __repr__(self):
+        return "<region={}, kms_arn={}>".format(
+            self.region, self.kms_arn)
+
+
 class BillingBase(TiDBCloudyBase):
     __slots__ = ["_credits", "_discounts", "_runningTotal", "_totalCost"]
     credits: str = TiDBCloudyField(str)

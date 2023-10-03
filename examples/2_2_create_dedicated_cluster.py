@@ -12,7 +12,7 @@ api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 project = api.get_project(project_id, update_from_server=True)
 
 config = CreateClusterConfig()
-config\
+config \
     .set_name("dedicated-1") \
     .set_cluster_type("DEDICATED") \
     .set_cloud_provider("AWS") \

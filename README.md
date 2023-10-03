@@ -14,6 +14,7 @@
 
     - [Prerequisites](https://github.com/Oreoxmt/tidbcloudy#prerequisites)
     - [List all resources in your organization](https://github.com/Oreoxmt/tidbcloudy#list-all-resources-in-your-organization)
+    - [Create a project and manage your AWS CMEK](https://github.com/Oreoxmt/tidbcloudy#create-a-project-and-manage-your-aws-cmek) **New in 1.0.9**
     - [Create a cluster](https://github.com/Oreoxmt/tidbcloudy#create-a-cluster)
     - [Connect to TiDB](https://github.com/Oreoxmt/tidbcloudy#connect-to-tidb)
     - [Modify a cluster](https://github.com/Oreoxmt/tidbcloudy#modify-a-cluster)
@@ -35,7 +36,7 @@ If you do not have a TiDB Cloud account yet, you can sign up [here](https://tidb
 You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage your billings, projects, clusters, backups and restores:
 
 - manage your **billings** of your organization (_get_)
-- manage your TiDB Cloud **projects** (only _list_ is supported now)
+- manage your TiDB Cloud **projects** (_list_, _create_) and manage the **AWS CMEK** of your projects (_get_, _create_)
 - list all available cloud providers (AWS and GCP), regions, and specifications before creating or modifying a cluster
 - manage your TiDB Serverless or TiDB Dedicated **clusters** (_create_, _modify_, _pause_, _resume_, _get_, _list_, _delete_)
 - manage your **backups** of a cluster (_create_, _get_, _list_, _delete_)
@@ -43,7 +44,7 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 
 ### Compatibility with TiDB Cloud API
 
-`tidbcloudy` is compatible with TiDB Cloud API. **Endpoints added in [v1beta Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228), [v1beta Release 20230328](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230328), and [v1beta Release 20230905](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230905) are not supported for now**. The following table lists the compatibility between `tidbcloudy` and TiDB Cloud API.
+`tidbcloudy` is compatible with TiDB Cloud API. **Endpoints added in [v1beta Release 20230228](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230228) and [v1beta Release 20230905](https://docs.pingcap.com/tidbcloud/api/v1beta#section/API-Changelog/20230905) are not supported for now**. The following table lists the compatibility between `tidbcloudy` and TiDB Cloud API.
 
 <table>
 <thead>
@@ -70,6 +71,23 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
   </tr>
 </thead>
 <tbody>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.9" target="_blank" rel="noopener noreferrer">1.0.9</a></td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
   <tr>
     <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.8" target="_blank" rel="noopener noreferrer">1.0.8</a></td>
     <td>✅</td>
@@ -316,6 +334,8 @@ To get full code examples, see the [`examples`](https://github.com/Oreoxmt/tidbc
 
 ### List all resources in your organization
 
+**This feature is available in `tidbcloudy` 1.0.9 or later.**
+
 To get the full code example of listing all projects, clusters, backup tasks, and restore tasks in your organization, see [`0_list_resources.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/0_list_resources.py).
 
 ```python
@@ -331,6 +351,9 @@ api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
 
 for project in api.iter_projects():
     print(project)
+    if project.aws_cmek_enabled:
+        for aws_cmek in project.iter_aws_cmek():
+            print(aws_cmek)
     for cluster in project.iter_clusters():
         print(cluster)
         if cluster.cluster_type == ClusterType.DEDICATED:
@@ -338,6 +361,32 @@ for project in api.iter_projects():
                 print(backup)
     for restore in project.iter_restores():
         print(restore)
+```
+
+### Create a project and manage your AWS CMEK
+
+To create a project, run the [`8_manage_project.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/8_manage_project.py).
+
+```python
+import os
+
+import tidbcloudy
+
+public_key = os.environ.get("PUBLIC_KEY")
+private_key = os.environ.get("PRIVATE_KEY")
+debug_mode = os.environ.get("TIDBCLOUDY_LOG")
+
+api = tidbcloudy.TiDBCloud(public_key=public_key, private_key=private_key)
+# Create a project with AWS CMEK enabled
+project = api.create_project(name="0", aws_cmek_enabled=True, update_from_server=True)
+print(project)
+
+# Configure AWS CMEK for the project
+project.create_aws_cmek([("your_aws_region_1", "your_aws_kms_arn_1"), ("your_aws_region_2", "your_aws_kms_arn_2")])
+
+# List all AWS CMEKs of the project
+for cmek in project.iter_aws_cmek():
+    print(cmek)
 ```
 
 ### Create a cluster
@@ -524,6 +573,8 @@ for restore in project.iter_restores():
 
 ### Pause or resume your cluster
 
+**This feature is available in `tidbcloudy` 1.0.0 or later.**
+
 To pause or resume your cluster, run the [`6_pause_cluster.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/6_pause_cluster.py).
 
 ```python
@@ -553,6 +604,8 @@ if cluster.status.cluster_status == ClusterStatus.RESUMING:
 ```
 
 ### Get monthly bills of your organization
+
+**This feature is available in `tidbcloudy` 1.0.8 or later.**
 
 To get the billing information of your organization, run the [`v1beta1_get_monthly_bill.py`](https://github.com/Oreoxmt/tidbcloudy/tree/main/examples/v1beta1_get_monthly_bill.py).
 
