@@ -249,7 +249,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 yield restore
             page += 1
 
-    def config_aws_cmek(self, config: List[Tuple[str, str]]) -> None:
+    def create_aws_cmek(self, config: List[Tuple[str, str]]) -> None:
         """
         Configure the AWS Customer-Managed Encryption Keys (CMEK) for the project.
         Args:
@@ -260,7 +260,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 import tidbcloudy
                 api = tidbcloudy.TiDBCloud(public_key="your_public_key", private_key="your_private_key")
                 project = api.create_project(name="your_project_name", aws_cmek_enabled=True, update_from_server=True)
-                project.config_aws_cmek([(region, kms_arn), ...]
+                project.create_aws_cmek([(region, kms_arn), ...]
                 for cmek in project.iter_aws_cmek():
                     print(cmek)
         """

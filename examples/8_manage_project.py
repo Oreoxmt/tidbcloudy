@@ -12,7 +12,7 @@ project = api.create_project(name="0", aws_cmek_enabled=True, update_from_server
 print(project)
 
 # Configure AWS CMEK for the project
-project.config_aws_cmek([("your_aws_region_1", "your_aws_kms_arn_1"), ("your_aws_region_2", "your_aws_kms_arn_2")])
+project.create_aws_cmek([("your_aws_region_1", "your_aws_kms_arn_1"), ("your_aws_region_2", "your_aws_kms_arn_2")])
 
 # List all AWS CMEKs of the project
 for cmek in project.iter_aws_cmek():
