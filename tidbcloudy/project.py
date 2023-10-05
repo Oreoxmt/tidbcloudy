@@ -51,7 +51,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         if isinstance(config, CreateClusterConfig):
             config = config.to_object()
         path = "projects/{}/clusters".format(self.id)
-        resp = self.context.call_post(path=path, json=config)
+        resp = self.context.call_post(server="v1beta", path=path, json=config)
         return Cluster(context=self.context, id=resp["id"], project_id=self.id)
 
     def update_cluster(self, cluster_id: str, config: Union[UpdateClusterConfig, dict]):
@@ -112,7 +112,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
 
         """
         path = "projects/{}/clusters/{}".format(self.id, cluster_id)
-        resp = self.context.call_get(path=path)
+        resp = self.context.call_get(server="v1beta", path=path)
         return Cluster.from_object(self.context, resp)
 
     def iter_clusters(self, page_size: int = 10) -> Iterator[Cluster]:
@@ -168,7 +168,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self.context.call_get(path=path, params=query)
+        resp = self.context.call_get(server="v1beta", path=path, params=query)
         return Page(
             [Cluster.from_object(self.context, item) for item in resp["items"]],
             page, page_size, resp["total"])
@@ -192,7 +192,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
             "backup_id": backup_id,
             "config": cluster_config["config"]
         }
-        resp = self.context.call_post(path=path, json=create_config)
+        resp = self.context.call_post(server="v1beta", path=path, json=create_config)
         return Restore(context=self.context, id=resp["id"], cluster_id=resp["cluster_id"])
 
     def get_restore(self, restore_id: str) -> Restore:
@@ -205,7 +205,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
 
         """
         path = "projects/{}/restores/{}".format(self.id, restore_id)
-        resp = self.context.call_get(path=path)
+        resp = self.context.call_get(server="v1beta", path=path)
         return Restore.from_object(self.context, resp)
 
     def list_restores(self, *, page: int = None, page_size: int = None) -> Page[Restore]:
@@ -224,7 +224,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self.context.call_get(path=path, params=query)
+        resp = self.context.call_get(server="v1beta", path=path, params=query)
         return Page(
             [Restore.from_object(self.context, item) for item in resp["items"]],
             page, page_size, resp["total"]
@@ -273,7 +273,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 "kms_arn": kms_arn
             })
         path = f"projects/{self.id}/aws-cmek"
-        self.context.call_post(path=path, json=payload)
+        self.context.call_post(server="v1beta", path=path, json=payload)
 
     def list_aws_cmek(self) -> Page[ProjectAWSCMEK]:
         """
@@ -292,7 +292,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                     print(cmek)
         """
         path = f"projects/{self.id}/aws-cmek"
-        resp = self.context.call_get(path=path)
+        resp = self.context.call_get(server="v1beta", path=path)
         total = len(resp["items"])
         return Page(
             [ProjectAWSCMEK.from_object(self.context, item) for item in resp["items"]],
