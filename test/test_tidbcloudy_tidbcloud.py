@@ -1,7 +1,10 @@
+import pytest
+
 import tidbcloudy
 from test_server_config import TEST_SERVER_CONFIG
+from tidbcloudy.exception import TiDBCloudResponseException
 from tidbcloudy.project import Project
-from tidbcloudy.specification import CloudSpecification
+from tidbcloudy.specification import BillingMonthSummary, CloudSpecification
 from tidbcloudy.util.page import Page
 from tidbcloudy.util.timestamp import timestamp_to_string
 
@@ -92,3 +95,51 @@ class TestProviderRegions:
                 TestProviderRegions.assert_provider_regions_developer(spec)
             else:
                 assert False
+
+
+class TestBilling:
+    @staticmethod
+    def assert_billing(billing: BillingMonthSummary):
+        assert isinstance(billing, BillingMonthSummary)
+        assert billing.overview.to_object() == {
+            "billedMonth": "2023-10",
+            "credits": "1.00",
+            "discounts": "2.00",
+            "runningTotal": "3.00",
+            "totalCost": "4.00"
+        }
+        assert billing.summaryByProject.otherCharges[0].to_object() == {
+            "chargeName": "Support Plan",
+            "credits": "0.10",
+            "discounts": "0.20",
+            "runningTotal": "0.30",
+            "totalCost": "0.40"
+        }
+        assert billing.summaryByProject.projects[0].to_object() == {
+            "credits": "3.00",
+            "discounts": "0.50",
+            "projectName": "prod-project",
+            "runningTotal": "1.00",
+            "totalCost": "4.00"
+        }
+        assert billing.summaryByService[0].to_object() == {
+            "credits": "2.00",
+            "discounts": "3.00",
+            "runningTotal": "5.00",
+            "serviceCosts": [
+                {}
+            ],
+            "serviceName": "TiDB Dedicated",
+            "totalCost": "4.00"
+        }
+
+    def test_get_monthly_bill(self):
+        current_bill = api.get_monthly_bill(month="202309")
+        assert current_bill.overview.billedMonth == "2023-09"
+        current_bill = api.get_monthly_bill(month="2023-10")
+        assert current_bill.overview.billedMonth == "2023-10"
+        current_bill = api.get_monthly_bill(month="202310")
+        assert current_bill.overview.billedMonth == "2023-10"
+        TestBilling.assert_billing(current_bill)
+        with pytest.raises(TiDBCloudResponseException):
+            api.get_monthly_bill(month="202308")

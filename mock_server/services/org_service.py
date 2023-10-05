@@ -1,10 +1,11 @@
 import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from mock_server.server_state import CONFIG
 from tidbcloudy.context import Context
 from tidbcloudy.project import Project
+from tidbcloudy.specification import BillingMonthSummary
 
 
 class OrgService:
@@ -28,3 +29,10 @@ class OrgService:
             "create_timestamp": str(int(datetime.now().timestamp()))
         })
         return new_project
+
+    @staticmethod
+    def get_monthly_bill(billings: List[BillingMonthSummary], month: str) -> Union[None, BillingMonthSummary]:
+        for billing in billings:
+            if billing.overview.billedMonth == month:
+                return billing
+        return None

@@ -101,5 +101,89 @@
         }
       ]
     }
+  ],
+  "billings": [
+    {
+      "overview": {
+        "billedMonth": "2023-10",
+        "credits": "1.00",
+        "discounts": "2.00",
+        "runningTotal": "3.00",
+        "totalCost": "4.00"
+      },
+      "summaryByProject": {
+        "otherCharges": [
+          {
+            "chargeName": "Support Plan",
+            "credits": "0.10",
+            "discounts": "0.20",
+            "runningTotal": "0.30",
+            "totalCost": "0.40"
+          }
+        ],
+        "projects": [
+          {
+            "credits": "3.00",
+            "discounts": "0.50",
+            "projectName": "prod-project",
+            "runningTotal": "1.00",
+            "totalCost": "4.00"
+          }
+        ]
+      },
+      "summaryByService": [
+        {
+          "credits": "2.00",
+          "discounts": "3.00",
+          "runningTotal": "5.00",
+          "serviceCosts": [
+            {}
+          ],
+          "serviceName": "TiDB Dedicated",
+          "totalCost": "4.00"
+        }
+      ]
+    },
+    {
+      "overview": {
+        "billedMonth": "2023-09",
+        "credits": "1.10",
+        "discounts": "2.10",
+        "runningTotal": "3.10",
+        "totalCost": "4.10"
+      },
+      "summaryByProject": {
+        "otherCharges": [
+          {
+            "chargeName": "Support Plan",
+            "credits": "0.11",
+            "discounts": "0.21",
+            "runningTotal": "0.31",
+            "totalCost": "0.41"
+          }
+        ],
+        "projects": [
+          {
+            "credits": "3.01",
+            "discounts": "0.50",
+            "projectName": "prod-project",
+            "runningTotal": "1.01",
+            "totalCost": "4.01"
+          }
+        ]
+      },
+      "summaryByService": [
+        {
+          "credits": "2.10",
+          "discounts": "3.10",
+          "runningTotal": "5.10",
+          "serviceCosts": [
+            {}
+          ],
+          "serviceName": "TiDB Dedicated",
+          "totalCost": "4.10"
+        }
+      ]
+    }
   ]
 }
