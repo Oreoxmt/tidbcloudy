@@ -1,0 +1,105 @@
+{
+  "projects": [
+    {
+      "id": "1",
+      "org_id": "1",
+      "name": "default_project",
+      "cluster_count": 4,
+      "user_count": 10,
+      "create_timestamp": "1656991448",
+      "aws_cmek_enabled": false
+    },
+    {
+      "id": "2",
+      "org_id": "1",
+      "name": "default_project_1",
+      "cluster_count": 5,
+      "user_count": 1,
+      "create_timestamp": "1650091448",
+      "aws_cmek_enabled": true
+    }
+  ],
+  "org_id": "1",
+  "provider_regions": [
+    {
+      "cluster_type": "DEDICATED",
+      "cloud_provider": "AWS",
+      "region": "us-west-2",
+      "tidb": [
+        {
+          "node_size": "8C16G",
+          "node_quantity_range": {
+            "min": 1,
+            "step": 1
+          }
+        }
+      ],
+      "tikv": [
+        {
+          "node_size": "8C32G",
+          "node_quantity_range": {
+            "min": 3,
+            "step": 3
+          },
+          "storage_size_gib_range": {
+            "min": 500,
+            "max": 4096
+          }
+        }
+      ],
+      "tiflash": [
+        {
+          "node_size": "8C64G",
+          "node_quantity_range": {
+            "min": 0,
+            "step": 1
+          },
+          "storage_size_gib_range": {
+            "min": 500,
+            "max": 2048
+          }
+        }
+      ]
+    },
+    {
+      "cluster_type": "DEVELOPER",
+      "cloud_provider": "AWS",
+      "region": "us-west-2",
+      "tidb": [
+        {
+          "node_size": "Shared0",
+          "node_quantity_range": {
+            "min": 1,
+            "step": 1
+          }
+        }
+      ],
+      "tikv": [
+        {
+          "node_size": "Shared0",
+          "node_quantity_range": {
+            "min": 1,
+            "step": 1
+          },
+          "storage_size_gib_range": {
+            "min": 1,
+            "max": 1
+          }
+        }
+      ],
+      "tiflash": [
+        {
+          "node_size": "Shared0",
+          "node_quantity_range": {
+            "min": 1,
+            "step": 1
+          },
+          "storage_size_gib_range": {
+            "min": 1,
+            "max": 1
+          }
+        }
+      ]
+    }
+  ]
+}
