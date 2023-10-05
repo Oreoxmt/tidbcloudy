@@ -1,5 +1,5 @@
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
-from .specification import BackupType, BackupStatus
+from .specification import BackupStatus, BackupType
 from .util.log import log
 
 
