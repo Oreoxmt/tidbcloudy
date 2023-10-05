@@ -366,8 +366,8 @@ class ClusterInfoOfRestore(TiDBCloudyBase):
 
 class ProjectAWSCMEK(TiDBCloudyBase):
     __slots__ = ["_region", "_kms_arn"]
-    region: str = None
-    kms_arn: str = None
+    region: str = TiDBCloudyField(str)
+    kms_arn: str = TiDBCloudyField(str)
 
     def __repr__(self):
         return "<region={}, kms_arn={}>".format(
