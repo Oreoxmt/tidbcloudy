@@ -1,14 +1,15 @@
 import time
+from typing import Iterator, Union
+
 import deprecation
 import MySQLdb
-from typing import Union, Iterator
 
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
-from .specification import ClusterType, CloudProvider, ClusterConfig, ClusterInfo, UpdateClusterConfig, ClusterStatus
 from .backup import Backup
+from .specification import CloudProvider, ClusterConfig, ClusterInfo, ClusterStatus, ClusterType, UpdateClusterConfig
 from .util.log import log
-from .util.timestamp import timestamp_to_string
 from .util.page import Page
+from .util.timestamp import timestamp_to_string
 
 
 # noinspection PyShadowingBuiltins
@@ -28,7 +29,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
 
     def _update_info_from_server(self):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
-        resp = self.context.call_get(path=path)
+        resp = self.context.call_get(server="v1beta", path=path)
         self.assign_object(resp)
 
     def wait_for_available(self, *, timeout_sec: int = None, interval_sec: int = 10) -> bool:
@@ -76,7 +77,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
         if isinstance(config, UpdateClusterConfig):
             config = config.to_object()
-        self.context.call_patch(path=path, json=config)
+        self.context.call_patch(server="v1beta", path=path, json=config)
         log("Cluster id={} has been updated".format(self.id))
         if update_from_server:
             self._update_info_from_server()
@@ -84,20 +85,20 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
     def pause(self):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
         config = {"config": {"paused": True}}
-        self.context.call_patch(path=path, json=config)
+        self.context.call_patch(server="v1beta", path=path, json=config)
         self._update_info_from_server()
         log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
 
     def resume(self):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
         config = {"config": {"paused": False}}
-        self.context.call_patch(path=path, json=config)
+        self.context.call_patch(server="v1beta", path=path, json=config)
         self._update_info_from_server()
         log("Cluster id={} status={}".format(self.id, self.status.cluster_status.value))
 
     def delete(self):
         path = "projects/{}/clusters/{}".format(self.project_id, self.id)
-        self.context.call_delete(path=path)
+        self.context.call_delete(server="v1beta", path=path)
         log("Cluster id={} has been deleted".format(self.id))
 
     def create_backup(self, *, name: str, description: str = None) -> Backup:
@@ -115,7 +116,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         config = {"name": name}
         if description is not None:
             config["description"] = description
-        resp = self.context.call_post(path=path, json=config)
+        resp = self.context.call_post(server="v1beta", path=path, json=config)
         return self.get_backup(resp["id"])
 
     def delete_backup(self, backup_id: str):
@@ -167,10 +168,10 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self.context.call_get(path=path, params=query)
+        resp = self.context.call_get(server="v1beta", path=path, params=query)
         return Page(
             [Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup}) for
-                backup in resp["items"]], page, page_size, resp["total"])
+             backup in resp["items"]], page, page_size, resp["total"])
 
     def get_backup(self, backup_id: str) -> Backup:
         """
@@ -183,7 +184,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
 
         """
         path = "projects/{}/clusters/{}/backups/{}".format(self.project_id, self.id, backup_id)
-        resp = self.context.call_get(path=path)
+        resp = self.context.call_get(server="v1beta", path=path)
         return Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **resp})
 
     def connect(self, type: str, database: str, password: str):

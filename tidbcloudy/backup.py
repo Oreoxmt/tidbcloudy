@@ -1,5 +1,5 @@
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
-from .specification import BackupType, BackupStatus
+from .specification import BackupStatus, BackupType
 from .util.log import log
 
 
@@ -33,7 +33,7 @@ class Backup(TiDBCloudyBase, TiDBCloudyContextualBase):
 
     def delete(self):
         path = "projects/{}/clusters/{}/backups/{}".format(self.project_id, self.cluster_id, self.id)
-        self.context.call_delete(path=path)
+        self.context.call_delete(server="v1beta", path=path)
         log("backup task id={} has been deleted".format(self.id))
 
     def __repr__(self):

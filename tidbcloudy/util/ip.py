@@ -1,5 +1,6 @@
-import httpx
 import socket
+
+import httpx
 
 
 def get_current_ip_address() -> str:

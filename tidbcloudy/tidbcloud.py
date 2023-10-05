@@ -1,16 +1,22 @@
 from typing import Iterator, List
 
-from tidbcloudy.baseURL import V1BETA1
 from tidbcloudy.context import Context
 from tidbcloudy.project import Project
 from tidbcloudy.specification import BillingMonthSummary, CloudSpecification
 from tidbcloudy.util.page import Page
 from tidbcloudy.util.timestamp import get_current_year_month
 
+SERVER_CONFIG_DEFAULT = {
+    "v1beta": "https://api.tidbcloud.com/api/v1beta/",
+    "billing": "https://billing.tidbapi.com/v1beta1/"
+}
+
 
 class TiDBCloud:
-    def __init__(self, public_key: str, private_key: str):
-        self._context = Context(public_key, private_key)
+    def __init__(self, public_key: str, private_key: str, server_config: dict = None):
+        if server_config is None:
+            server_config = SERVER_CONFIG_DEFAULT
+        self._context = Context(public_key, private_key, server_config)
 
     def create_project(self, name: str, aws_cmek_enabled: bool = False, update_from_server: bool = False) -> Project:
         """
@@ -35,7 +41,7 @@ class TiDBCloud:
             "name": name,
             "aws_cmek_enabled": aws_cmek_enabled
         }
-        resp = self._context.call_post(path="projects", json=config)
+        resp = self._context.call_post(server="v1beta", path="projects", json=config)
         project_id = resp["id"]
         if update_from_server:
             return self.get_project(project_id=project_id, update_from_server=True)
@@ -91,7 +97,7 @@ class TiDBCloud:
             query["page"] = page
         if page_size is not None:
             query["page_size"] = page_size
-        resp = self._context.call_get(path="projects", params=query)
+        resp = self._context.call_get(server="v1beta", path="projects", params=query)
         return Page(
             [Project.from_object(self._context, item) for item in resp["items"]],
             page, page_size, resp["total"])
@@ -137,7 +143,7 @@ class TiDBCloud:
                     print(spec) # This is a CloudSpecification object
 
         """
-        resp = self._context.call_get(path="clusters/provider/regions")
+        resp = self._context.call_get(server="v1beta", path="clusters/provider/regions")
         return [CloudSpecification.from_object(obj=item) for item in resp["items"]]
 
     def get_monthly_bill(self, month: str) -> BillingMonthSummary:
@@ -159,7 +165,7 @@ class TiDBCloud:
         if "-" not in month and len(month) == 6:
             month = f"{month[:4]}-{month[4:]}"
         path = f"bills/{month}"
-        resp = self._context.call_get(path=path, base_url=V1BETA1.BILLING.value)
+        resp = self._context.call_get(server="billing", path=path)
         return BillingMonthSummary.from_object(self._context, resp)
 
     def get_current_month_bill(self) -> BillingMonthSummary:
