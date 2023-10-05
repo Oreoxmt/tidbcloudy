@@ -423,8 +423,8 @@ class BillingServiceCost(TiDBCloudyBase):
     __slots__ = []
 
 
-class BillingMonthSummaryByService(TiDBCloudyBase):
-    __slots__ = ["_serviceCosts", "_serviceName"]
+class BillingMonthSummaryByService(BillingBase):
+    __slots__ = ["_serviceCosts", "_serviceName"] + BillingBase.__slots__
     serviceCosts: List[dict] = TiDBCloudyListField(BillingServiceCost)
     serviceName: str = TiDBCloudyField(str)
 
@@ -437,7 +437,7 @@ class BillingMonthSummary(TiDBCloudyBase):
     __slots__ = ["_overview", "_summaryByProject", "_summaryByService"]
     overview: BillingMonthOverview = TiDBCloudyField(BillingMonthOverview)
     summaryByProject: BillingMonthSummaryByProject = TiDBCloudyField(BillingMonthSummaryByProject)
-    summaryByService: BillingMonthSummaryByService = TiDBCloudyListField(BillingMonthSummaryByService)
+    summaryByService: List[BillingMonthSummaryByService] = TiDBCloudyListField(BillingMonthSummaryByService)
 
     def __repr__(self):
         return "<BillingMonthSummary month={}>".format(self.overview.billedMonth)
