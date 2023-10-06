@@ -101,6 +101,7 @@ class TestBilling:
     @staticmethod
     def assert_billing(billing: BillingMonthSummary):
         assert isinstance(billing, BillingMonthSummary)
+        assert repr(billing) == "<BillingMonthSummary month=2023-10>"
         assert billing.overview.to_object() == {
             "billedMonth": "2023-10",
             "credits": "1.00",
