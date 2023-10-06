@@ -1,5 +1,6 @@
 from typing import List, Union
 
+from tidbcloudy.cluster import Cluster
 from tidbcloudy.context import Context
 from tidbcloudy.specification import CloudSpecification
 
@@ -46,3 +47,19 @@ class ProjectService:
     @staticmethod
     def list_provider_regions(provider_regions: List[CloudSpecification]) -> List[CloudSpecification]:
         return provider_regions
+
+    @staticmethod
+    def list_clusters(clusters: List[Cluster], project_id: str, page: int, page_size: int) -> [List[Cluster], int]:
+        current_clusters = []
+        for cluster in clusters:
+            if cluster.project_id == project_id:
+                current_clusters.append(cluster)
+        return_clusters = current_clusters[page_size * (page - 1): page_size * page]
+        total = len(current_clusters)
+        return return_clusters, total
+
+    @staticmethod
+    def get_cluster(clusters: List[Cluster], project_id: str, cluster_id: str) -> Cluster:
+        for cluster in clusters:
+            if cluster.project_id == project_id and cluster.id == cluster_id:
+                return cluster

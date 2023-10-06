@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request, Response
 from mock_server.server_state import CONFIG
 from mock_server.services.org_service import OrgService
 from mock_server.services.project_service import ProjectService
+from tidbcloudy.cluster import Cluster
 from tidbcloudy.context import Context
 from tidbcloudy.project import Project
 
@@ -27,7 +28,6 @@ def create_projects_blueprint():
 
     @bp.route("", methods=["POST"])
     def tidbcloudy_create_project() -> [Response, int]:
-        projects = [Project.from_object(contex, item) for item in CONFIG["projects"]]
         new_project = org_service.create_project(request.json)
         CONFIG["projects"].append(new_project.to_object())
         resp = jsonify({
@@ -55,5 +55,26 @@ def create_projects_blueprint():
             return jsonify({
                 "error": "aws cmek is not enabled"
             }), 400
+
+    @bp.route("/<string:project_id>/clusters", methods=["GET"])
+    def tidbcloudy_list_clusters(project_id) -> [Response, int]:
+        clusters = [Cluster.from_object(contex, item) for item in CONFIG["clusters"]]
+        page = request.args.get("page", default=1, type=int)
+        page_size = request.args.get("page_size", default=10, type=int)
+        return_clusters, total = pro_service.list_clusters(clusters, project_id, page, page_size)
+        resp = jsonify(
+            {
+                "items": [item.to_object() for item in return_clusters],
+                "total": total
+            }
+        )
+        return resp, 200
+
+    @bp.route("/<string:project_id>/clusters/<string:cluster_id>", methods=["GET"])
+    def tidbcloudy_get_cluster(project_id, cluster_id) -> [Response, int]:
+        clusters = [Cluster.from_object(contex, item) for item in CONFIG["clusters"]]
+        cluster = pro_service.get_cluster(clusters, project_id, cluster_id)
+        resp = jsonify(cluster.to_object())
+        return resp, 200
 
     return bp

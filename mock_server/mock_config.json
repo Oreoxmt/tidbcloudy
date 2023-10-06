@@ -19,6 +19,271 @@
       "aws_cmek_enabled": true
     }
   ],
+  "clusters": [
+    {
+      "id": "1",
+      "project_id": "1",
+      "name": "Cluster0",
+      "cluster_type": "DEDICATED",
+      "cloud_provider": "AWS",
+      "region": "us-west-2",
+      "create_timestamp": "1656991448",
+      "config": {
+        "port": 4000,
+        "components": {
+          "tidb": {
+            "node_size": "8C16G",
+            "node_quantity": 2
+          },
+          "tikv": {
+            "node_size": "8C32G",
+            "storage_size_gib": 1024,
+            "node_quantity": 3
+          }
+        }
+      },
+      "status": {
+        "tidb_version": "v6.1.0",
+        "cluster_status": "AVAILABLE",
+        "node_map": {
+          "tidb": [
+            {
+              "node_name": "tidb-0",
+              "availability_zone": "us-west-2a",
+              "node_size": "8C16G",
+              "vcpu_num": 8,
+              "ram_bytes": "17179869184",
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tidb-1",
+              "availability_zone": "us-west-2b",
+              "node_size": "8C16G",
+              "vcpu_num": 8,
+              "ram_bytes": "17179869184",
+              "status": "NODE_STATUS_AVAILABLE"
+            }
+          ],
+          "tikv": [
+            {
+              "node_name": "tikv-0",
+              "availability_zone": "us-west-2a",
+              "node_size": "8C32G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tikv-1",
+              "availability_zone": "us-west-2b",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tikv-2",
+              "availability_zone": "us-west-2c",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            }
+          ],
+          "tiflash": [
+            {
+              "node_name": "tiflash-0",
+              "availability_zone": "us-west-2a",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tiflash-1",
+              "availability_zone": "us-west-2b",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            }
+          ]
+        },
+        "connection_strings": {
+          "default_user": "root",
+          "standard": {
+            "host": "tidb.f69f3808.acea1f2a.us-east-1.shared.aws.tidbcloud.com",
+            "port": 4000
+          },
+          "vpc_peering": {
+            "host": "private-tidb.f69f3808.acea1f2a.us-east-1.shared.aws.tidbcloud.com",
+            "port": 4000
+          }
+        }
+      }
+    },
+    {
+      "id": "2",
+      "project_id": "2",
+      "name": "Cluster1",
+      "cluster_type": "DEDICATED",
+      "cloud_provider": "AWS",
+      "region": "us-west-1",
+      "create_timestamp": "1656991448",
+      "config": {
+        "port": 4000,
+        "components": {
+          "tidb": {
+            "node_size": "8C16G",
+            "node_quantity": 2
+          },
+          "tikv": {
+            "node_size": "8C32G",
+            "storage_size_gib": 1024,
+            "node_quantity": 3
+          }
+        }
+      },
+      "status": {
+        "tidb_version": "v7.1.0",
+        "cluster_status": "AVAILABLE",
+        "node_map": {
+          "tidb": [
+            {
+              "node_name": "tidb-0",
+              "availability_zone": "us-west-2a",
+              "node_size": "8C16G",
+              "vcpu_num": 8,
+              "ram_bytes": "17179869184",
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tidb-1",
+              "availability_zone": "us-west-2b",
+              "node_size": "8C16G",
+              "vcpu_num": 8,
+              "ram_bytes": "17179869184",
+              "status": "NODE_STATUS_AVAILABLE"
+            }
+          ],
+          "tikv": [
+            {
+              "node_name": "tikv-0",
+              "availability_zone": "us-west-2a",
+              "node_size": "8C32G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tikv-1",
+              "availability_zone": "us-west-2b",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tikv-2",
+              "availability_zone": "us-west-2c",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            }
+          ],
+          "tiflash": [
+            {
+              "node_name": "tiflash-0",
+              "availability_zone": "us-west-2a",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            },
+            {
+              "node_name": "tiflash-1",
+              "availability_zone": "us-west-2b",
+              "node_size": "8C64G",
+              "vcpu_num": 8,
+              "ram_bytes": "68719476736",
+              "storage_size_gib": 1024,
+              "status": "NODE_STATUS_AVAILABLE"
+            }
+          ]
+        },
+        "connection_strings": {
+          "default_user": "root",
+          "standard": {
+            "host": "tidb.test.us-east-1.shared.aws.tidbcloud.com",
+            "port": 4000
+          },
+          "vpc_peering": {
+            "host": "private-tidb.test.us-east-1.shared.aws.tidbcloud.com",
+            "port": 4000
+          }
+        }
+      }
+    },
+    {
+      "id": "3456",
+      "project_id": "2",
+      "name": "serverless-0",
+      "cluster_type": "DEVELOPER",
+      "cloud_provider": "AWS",
+      "region": "us-west-2",
+      "create_timestamp": "1606472018",
+      "config": {
+        "port": 4000,
+        "components": {
+          "tidb": {
+            "node_size": "Shared0",
+            "node_quantity": 1
+          },
+          "tikv": {
+            "node_size": "Shared0",
+            "node_quantity": 1,
+            "storage_size_gib": 0
+          },
+          "tiflash": {
+            "node_size": "Shared0",
+            "node_quantity": 1,
+            "storage_size_gib": 0
+          }
+        },
+        "ip_access_list": []
+      },
+      "status": {
+        "tidb_version": "v7.1.0",
+        "cluster_status": "AVAILABLE",
+        "node_map": {
+          "tidb": [],
+          "tikv": [],
+          "tiflash": []
+        },
+        "connection_strings": {
+          "default_user": "test.root",
+          "standard": {
+            "host": "gateway01.prod.aws.tidbcloud.com",
+            "port": 4000
+          },
+          "vpc_peering": {
+            "host": "gateway01-privatelink.prod.aws.tidbcloud.com",
+            "port": 4000
+          }
+        }
+      }
+    }
+  ],
   "org_id": "1",
   "provider_regions": [
     {
@@ -187,3 +452,4 @@
     }
   ]
 }
+
