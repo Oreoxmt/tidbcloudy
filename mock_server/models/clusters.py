@@ -16,6 +16,9 @@ def create_clusters_blueprint():
     def tidbcloudy_provider() -> [Response, int]:
         provider_regions = [CloudSpecification.from_object(contex, item) for item in CONFIG["provider_regions"]]
         provider_regions_obj = pro_service.list_provider_regions(provider_regions)
-        return {"items": [item.to_object() for item in provider_regions_obj]}
+        resp = {
+            "items": [item.to_object() for item in provider_regions_obj]
+        }
+        return resp, 200
 
     return bp
