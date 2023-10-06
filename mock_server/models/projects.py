@@ -87,4 +87,11 @@ def create_projects_blueprint():
         resp = jsonify(cluster.to_object())
         return resp, 200
 
+    @bp.route("/<string:project_id>/clusters/<string:cluster_id>", methods=["DELETE"])
+    def tidbcloudy_delete_cluster(project_id, cluster_id) -> [Response, int]:
+        clusters = [Cluster.from_object(contex, item) for item in CONFIG["clusters"]]
+        current_clusters = pro_service.delete_cluster(clusters, project_id, cluster_id)
+        CONFIG["clusters"] = [item.to_object() for item in current_clusters]
+        return {}, 200
+
     return bp

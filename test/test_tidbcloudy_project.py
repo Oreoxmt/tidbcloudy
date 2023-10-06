@@ -1,7 +1,10 @@
+import pytest
+
 import tidbcloudy
 from test_server_config import TEST_SERVER_CONFIG
 from tidbcloudy.cluster import Cluster
-from tidbcloudy.specification import ProjectAWSCMEK
+from tidbcloudy.exception import TiDBCloudResponseException
+from tidbcloudy.specification import CreateClusterConfig, ProjectAWSCMEK
 from tidbcloudy.util.page import Page
 from tidbcloudy.util.timestamp import timestamp_to_string
 
@@ -111,7 +114,8 @@ class TestCluster:
                == cluster.config.components.tiflash.node_size == "Shared0"
         assert cluster.config.components.tidb.node_quantity == cluster.config.components.tikv.node_quantity \
                == cluster.config.components.tiflash.node_quantity == 1
-        assert cluster.config.components.tikv.storage_size_gib == cluster.config.components.tiflash.storage_size_gib == 0
+        assert cluster.config.components.tikv.storage_size_gib \
+               == cluster.config.components.tiflash.storage_size_gib == 0
         assert cluster.status.tidb_version == "v7.1.0"
         assert cluster.status.cluster_status.value == "AVAILABLE"
         assert cluster.status.node_map.tidb == cluster.status.node_map.tikv == cluster.status.node_map.tiflash == []
@@ -175,3 +179,12 @@ class TestCluster:
         assert repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} " \
                                 f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
         assert project.get_cluster(cluster_id=cluster.id).to_object() == cluster.to_object()
+
+    def test_delete_cluster(self):
+        delete_cluster_id = "3456"
+        init_total = project.list_clusters().total
+        project.delete_cluster(cluster_id=delete_cluster_id)
+        current_total = project.list_clusters().total
+        assert current_total == init_total - 1
+        with pytest.raises(TiDBCloudResponseException):
+            project.get_cluster(cluster_id=delete_cluster_id)

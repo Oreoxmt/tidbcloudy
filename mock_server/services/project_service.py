@@ -4,6 +4,7 @@ from typing import List, Union
 
 from tidbcloudy.cluster import Cluster
 from tidbcloudy.context import Context
+from tidbcloudy.exception import TiDBCloudResponseException
 from tidbcloudy.specification import CloudSpecification, ClusterStatus
 
 
@@ -89,3 +90,9 @@ class ProjectService:
         for cluster in clusters:
             if cluster.project_id == project_id and cluster.id == cluster_id:
                 return cluster
+        raise TiDBCloudResponseException(f"cluster {cluster_id} not found")
+
+    def delete_cluster(self, clusters: List[Cluster], project_id: str, cluster_id: str) -> List[Cluster]:
+        delete_cluster = self.get_cluster(clusters, project_id, cluster_id)
+        clusters.remove(delete_cluster)
+        return clusters
