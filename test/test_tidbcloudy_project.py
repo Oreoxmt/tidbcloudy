@@ -149,3 +149,29 @@ class TestCluster:
         cluster = project.get_cluster(cluster_id="2")
         assert isinstance(cluster, Cluster)
         TestCluster.assert_cluster_dedicated_properties(cluster)
+
+    def test_create_cluster(self):
+        config = CreateClusterConfig()
+        config \
+            .set_name("test-serverless") \
+            .set_cluster_type("DEVELOPER") \
+            .set_cloud_provider("aws") \
+            .set_region("us-west-2") \
+            .set_root_password("password") \
+            .add_ip_access(cidr="0.0.0.0/0") \
+            .add_ip_access(cidr="1.1.1.1/1")
+        cluster = project.create_cluster(config=config)
+        assert isinstance(cluster, Cluster)
+        assert repr(cluster) == f"<Cluster id={cluster.id} Unknown status>"
+        cluster.wait_for_available(interval_sec=1)
+        assert cluster.status.cluster_status.value == "AVAILABLE"
+        assert cluster.name == "test-serverless"
+        assert cluster.cluster_type.value == "DEVELOPER"
+        assert cluster.cloud_provider.value == "AWS"
+        assert cluster.region == "us-west-2"
+        assert cluster.config.port == cluster.status.connection_strings.standard.port \
+               == cluster.status.connection_strings.vpc_peering.port == 4000
+        assert cluster.status.tidb_version == "v0.0.0"
+        assert repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} " \
+                                f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
+        assert project.get_cluster(cluster_id=cluster.id).to_object() == cluster.to_object()

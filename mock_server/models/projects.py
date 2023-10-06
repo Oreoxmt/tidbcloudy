@@ -70,6 +70,16 @@ def create_projects_blueprint():
         )
         return resp, 200
 
+    @bp.route("/<string:project_id>/clusters", methods=["POST"])
+    def tidbcloudy_create_cluster(project_id) -> [Response, int]:
+        new_cluster = pro_service.create_cluster(project_id, request.json)
+        CONFIG["clusters"].append(new_cluster.to_object())
+        print(new_cluster.id)
+        resp = jsonify({
+            "id": new_cluster.id
+        })
+        return resp, 200
+
     @bp.route("/<string:project_id>/clusters/<string:cluster_id>", methods=["GET"])
     def tidbcloudy_get_cluster(project_id, cluster_id) -> [Response, int]:
         clusters = [Cluster.from_object(contex, item) for item in CONFIG["clusters"]]

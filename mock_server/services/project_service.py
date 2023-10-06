@@ -1,8 +1,10 @@
+import uuid
+from datetime import datetime
 from typing import List, Union
 
 from tidbcloudy.cluster import Cluster
 from tidbcloudy.context import Context
-from tidbcloudy.specification import CloudSpecification
+from tidbcloudy.specification import CloudSpecification, ClusterStatus
 
 
 class ProjectService:
@@ -57,6 +59,30 @@ class ProjectService:
         return_clusters = current_clusters[page_size * (page - 1): page_size * page]
         total = len(current_clusters)
         return return_clusters, total
+
+    def create_cluster(self, project_id: str, body: dict) -> Cluster:
+        body["id"] = str(uuid.uuid4().int % (10 ** 19))
+        body["project_id"] = project_id
+        body["create_timestamp"] = str(int(datetime.now().timestamp()))
+        body["status"] = {
+            "tidb_version": "v0.0.0",
+            "cluster_status": ClusterStatus.AVAILABLE.value,
+            "connection_strings": {
+                "default_user": "root",
+                "standard": {
+                    "host": "gateway01.prod.aws.tidbcloud.com",
+                    "port": 4000
+                },
+                "vpc_peering": {
+                    "host": "gateway01-privatelink.prod.aws.tidbcloud.com",
+                    "port": 4000
+                }
+            }
+        }
+        if body["config"].get("port") is None:
+            body["config"]["port"] = 4000
+        new_cluster = Cluster.from_object(self._context, body)
+        return new_cluster
 
     @staticmethod
     def get_cluster(clusters: List[Cluster], project_id: str, cluster_id: str) -> Cluster:
