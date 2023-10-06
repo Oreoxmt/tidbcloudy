@@ -45,10 +45,21 @@ class TestUpdateClusterConfig:
 
     def test_update_component(self):
         cluster_config = UpdateClusterConfig()
+        cluster_config.update_component("tidb", 2, "8C16G")
+        cluster_config.update_component("tikv", 1, "8C32G", 400)
         cluster_config.update_component("tiflash", 3, "8C64G", 500)
         assert cluster_config.to_object() == {
             "config": {
                 "components": {
+                    "tidb": {
+                        "node_quantity": 2,
+                        "node_size": "8C16G"
+                    },
+                    "tikv": {
+                        "node_quantity": 1,
+                        "node_size": "8C32G",
+                        "storage_size_gib": 400
+                    },
                     "tiflash": {
                         "node_quantity": 3,
                         "node_size": "8C64G",
