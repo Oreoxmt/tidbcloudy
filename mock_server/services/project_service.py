@@ -10,15 +10,15 @@ from tidbcloudy.specification import CloudSpecification, ClusterStatus, TiDBComp
 VALID_COMPONENTS = {
     "tidb": {
         "class": TiDBComponent,
-        "attributes": ["node_size", "node_quantity"]
+        "attributes": {"node_size", "node_quantity"}
     },
     "tikv": {
         "class": TiKVComponent,
-        "attributes": ["node_size", "node_quantity", "storage_size_gib"]
+        "attributes": {"node_size", "node_quantity", "storage_size_gib"}
     },
     "tiflash": {
         "class": TiFlashComponent,
-        "attributes": ["node_size", "node_quantity", "storage_size_gib"]
+        "attributes": {"node_size", "node_quantity", "storage_size_gib"}
     }
 }
 
@@ -113,24 +113,24 @@ class ProjectService:
         return clusters
 
     @staticmethod
-    def _get_component_attr(cluster: Cluster, component_name: str, attribute_name: str):
+    def _get_component(cluster: Cluster, component_name: str):
         if component_name not in VALID_COMPONENTS:
             raise TiDBCloudResponseException(400, f"The component {component_name} is not supported")
         component = getattr(cluster.config.components, component_name)
         if component is None:
-            setattr(cluster.config.components, component_name, VALID_COMPONENTS[component_name]["class"]())
-            component = getattr(cluster.config.components, component_name)
-        return getattr(component, attribute_name)
+            init_component = VALID_COMPONENTS[component_name]["class"]
+            component = init_component()
+            setattr(cluster.config.components, component_name, component)
+        return component
 
     @staticmethod
     def _update_components(cluster: Cluster, components_config: dict) -> Cluster:
         for component, config in components_config.items():
-            valid_attrs = VALID_COMPONENTS.get(component, {}).get("attributes", [])
+            valid_attrs = VALID_COMPONENTS.get(component, {}).get("attributes", set())
             for attribute, value in config.items():
                 if attribute not in valid_attrs:
                     raise TiDBCloudResponseException(400, f"The attribute {attribute} is not supported")
-                ProjectService._get_component_attr(cluster, component, attribute)
-                setattr(getattr(cluster.config.components, component), attribute, value)
+                setattr(ProjectService._get_component(cluster, component), attribute, value)
         return cluster
 
     @staticmethod
