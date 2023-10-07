@@ -74,7 +74,6 @@ def create_projects_blueprint():
     def tidbcloudy_create_cluster(project_id) -> [Response, int]:
         new_cluster = pro_service.create_cluster(project_id, request.json)
         CONFIG["clusters"].append(new_cluster.to_object())
-        print(new_cluster.id)
         resp = jsonify({
             "id": new_cluster.id
         })
@@ -91,6 +90,13 @@ def create_projects_blueprint():
     def tidbcloudy_delete_cluster(project_id, cluster_id) -> [Response, int]:
         clusters = [Cluster.from_object(contex, item) for item in CONFIG["clusters"]]
         current_clusters = pro_service.delete_cluster(clusters, project_id, cluster_id)
+        CONFIG["clusters"] = [item.to_object() for item in current_clusters]
+        return {}, 200
+
+    @bp.route("/<string:project_id>/clusters/<string:cluster_id>", methods=["PATCH"])
+    def tidbcloudy_update_cluster(project_id, cluster_id) -> [Response, int]:
+        clusters = [Cluster.from_object(contex, item) for item in CONFIG["clusters"]]
+        current_clusters = pro_service.update_cluster(clusters, project_id, cluster_id, request.json)
         CONFIG["clusters"] = [item.to_object() for item in current_clusters]
         return {}, 200
 

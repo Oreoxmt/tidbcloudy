@@ -4,7 +4,7 @@ import tidbcloudy
 from test_server_config import TEST_SERVER_CONFIG
 from tidbcloudy.cluster import Cluster
 from tidbcloudy.exception import TiDBCloudResponseException
-from tidbcloudy.specification import CreateClusterConfig, ProjectAWSCMEK
+from tidbcloudy.specification import CreateClusterConfig, ProjectAWSCMEK, UpdateClusterConfig
 from tidbcloudy.util.page import Page
 from tidbcloudy.util.timestamp import timestamp_to_string
 
@@ -188,3 +188,50 @@ class TestCluster:
         assert current_total == init_total - 1
         with pytest.raises(TiDBCloudResponseException):
             project.get_cluster(cluster_id=delete_cluster_id)
+
+    def test_update_cluster_pause_resume(self):
+        cluster_id = "2"
+        pause_config = {"config": {"paused": True}}
+        resume_config = {"config": {"paused": False}}
+        project.update_cluster(cluster_id=cluster_id, config=pause_config)
+        assert project.get_cluster(cluster_id=cluster_id).status.cluster_status.value == "PAUSED"
+        with pytest.raises(TiDBCloudResponseException):
+            project.update_cluster(cluster_id=cluster_id, config=pause_config)
+        project.update_cluster(cluster_id=cluster_id, config=resume_config)
+        assert project.get_cluster(cluster_id=cluster_id).status.cluster_status.value == "AVAILABLE"
+        with pytest.raises(TiDBCloudResponseException):
+            project.update_cluster(cluster_id=cluster_id, config=resume_config)
+        with pytest.raises(TiDBCloudResponseException):
+            project.update_cluster(cluster_id=cluster_id, config={"config": {"paused": "true"}})
+        cluster = project.get_cluster(cluster_id=cluster_id)
+        cluster.pause()
+        assert cluster.status.cluster_status.value == "PAUSED"
+        with pytest.raises(TiDBCloudResponseException):
+            cluster.pause()
+        cluster.resume()
+        assert cluster.status.cluster_status.value == "AVAILABLE"
+        with pytest.raises(TiDBCloudResponseException):
+            cluster.resume()
+
+    def test_update_cluster_config(self):
+        cluster_id = "2"
+        config = UpdateClusterConfig()
+        config.update_component("tidb", 6, "4C32G")
+        config.update_component("tikv", 9, "8C16G", 400)
+        config.update_component("tiflash", 12, "8C64G", 500)
+        project.update_cluster(cluster_id=cluster_id, config=config)
+        cluster = project.get_cluster(cluster_id=cluster_id)
+        assert cluster.config.components.tidb.node_quantity == 6
+        assert cluster.config.components.tidb.node_size == "4C32G"
+        assert cluster.config.components.tikv.node_quantity == 9
+        assert cluster.config.components.tikv.node_size == "8C16G"
+        assert cluster.config.components.tikv.storage_size_gib == 400
+        assert cluster.config.components.tiflash.node_quantity == 12
+        assert cluster.config.components.tiflash.node_size == "8C64G"
+        assert cluster.config.components.tiflash.storage_size_gib == 500
+        with pytest.raises(TiDBCloudResponseException):
+            project.update_cluster(cluster_id=cluster_id,
+                                   config={"config": {"components": {"pd": {"node_quantity": 1}}}})
+        with pytest.raises(TiDBCloudResponseException):
+            project.update_cluster(cluster_id=cluster_id,
+                                   config={"config": {"components": {"tidb": {"storage_size_gib": 100}}}})
