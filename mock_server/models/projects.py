@@ -11,6 +11,7 @@ from tidbcloudy.project import Project
 
 def create_projects_blueprint():
     bp = Blueprint("projects", __name__)
+
     org_service = OrgService()
     pro_service = ProjectService()
     contex = Context("", "", {})
@@ -55,13 +56,8 @@ def create_projects_blueprint():
     def tidbcloudy_create_project_aws_cmek(project_id) -> [Response, int]:
         projects = CONFIG["projects"]
         body = request.json
-        resp = pro_service.create_project_aws_cmek(projects, project_id, body)
-        if resp:
-            return {}, 200
-        else:
-            return jsonify({
-                "error": "aws cmek is not enabled"
-            }), 400
+        pro_service.create_project_aws_cmek(projects, project_id, body)
+        return {}, 200
 
     @bp.route("/<string:project_id>/clusters", methods=["GET"])
     def tidbcloudy_list_clusters(project_id) -> [Response, int]:

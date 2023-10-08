@@ -9,6 +9,7 @@ from tidbcloudy.specification import BillingMonthSummary
 
 def create_billing_blueprint():
     bp = Blueprint("billing", __name__)
+
     org_service = OrgService()
     contex = Context("", "", {})
 

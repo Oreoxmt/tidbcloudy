@@ -49,10 +49,12 @@ class ProjectService:
             return project.get("aws_cmek", [])
 
     @staticmethod
-    def create_project_aws_cmek(projects: List[dict], project_id: str, body: dict) -> bool:
+    def create_project_aws_cmek(projects: List[dict], project_id: str, body: dict) -> None:
         project_index = ProjectService._get_project_index_by_id(projects, project_id)
         if project_index is None or projects[project_index].get("aws_cmek_enabled") is False:
-            return False
+            raise HTTPStatusError("",
+                                  request=Request("POST", ""),
+                                  response=Response(400, text="aws cmek is not enabled"))
         project_cmek = projects[project_index].get("aws_cmek", [])
         for create_cmek in body.get("specs", []):
             current_cmek = {
@@ -61,7 +63,6 @@ class ProjectService:
             }
             project_cmek.append(current_cmek)
         projects[project_index].update({"aws_cmek": project_cmek})
-        return True
 
     @staticmethod
     def list_provider_regions(provider_regions: List[CloudSpecification]) -> List[CloudSpecification]:
