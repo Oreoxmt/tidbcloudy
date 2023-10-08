@@ -186,8 +186,9 @@ class TestCluster:
         project.delete_cluster(cluster_id=delete_cluster_id)
         current_total = project.list_clusters().total
         assert current_total == init_total - 1
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             project.get_cluster(cluster_id=delete_cluster_id)
+        assert exc_info.value.status == 400
 
     def test_update_cluster_pause_resume(self):
         cluster_id = "2"
@@ -195,23 +196,28 @@ class TestCluster:
         resume_config = {"config": {"paused": False}}
         project.update_cluster(cluster_id=cluster_id, config=pause_config)
         assert project.get_cluster(cluster_id=cluster_id).status.cluster_status.value == "PAUSED"
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             project.update_cluster(cluster_id=cluster_id, config=pause_config)
+        assert exc_info.value.status == 400
         project.update_cluster(cluster_id=cluster_id, config=resume_config)
         assert project.get_cluster(cluster_id=cluster_id).status.cluster_status.value == "AVAILABLE"
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             project.update_cluster(cluster_id=cluster_id, config=resume_config)
-        with pytest.raises(TiDBCloudResponseException):
+        assert exc_info.value.status == 400
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             project.update_cluster(cluster_id=cluster_id, config={"config": {"paused": "true"}})
+        assert exc_info.value.status == 400
         cluster = project.get_cluster(cluster_id=cluster_id)
         cluster.pause()
         assert cluster.status.cluster_status.value == "PAUSED"
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             cluster.pause()
+        assert exc_info.value.status == 400
         cluster.resume()
         assert cluster.status.cluster_status.value == "AVAILABLE"
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             cluster.resume()
+        assert exc_info.value.status == 400
 
     def test_update_cluster_config(self):
         cluster_id = "2"
@@ -229,9 +235,11 @@ class TestCluster:
         assert cluster.config.components.tiflash.node_quantity == 12
         assert cluster.config.components.tiflash.node_size == "8C64G"
         assert cluster.config.components.tiflash.storage_size_gib == 500
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             project.update_cluster(cluster_id=cluster_id,
                                    config={"config": {"components": {"pd": {"node_quantity": 1}}}})
-        with pytest.raises(TiDBCloudResponseException):
+        assert exc_info.value.status == 400
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             project.update_cluster(cluster_id=cluster_id,
                                    config={"config": {"components": {"tidb": {"storage_size_gib": 100}}}})
+        assert exc_info.value.status == 400

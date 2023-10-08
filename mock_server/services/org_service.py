@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
-from typing import List, Union
+from typing import List
+
+from httpx import HTTPStatusError, Request, Response
 
 from mock_server.server_state import CONFIG
 from tidbcloudy.context import Context
@@ -31,8 +33,10 @@ class OrgService:
         return new_project
 
     @staticmethod
-    def get_monthly_bill(billings: List[BillingMonthSummary], month: str) -> Union[None, BillingMonthSummary]:
+    def get_monthly_bill(billings: List[BillingMonthSummary], month: str) -> BillingMonthSummary:
         for billing in billings:
             if billing.overview.billedMonth == month:
                 return billing
-        return None
+        raise HTTPStatusError("",
+                              request=Request("GET", ""),
+                              response=Response(400, text="The billing month is not found"))

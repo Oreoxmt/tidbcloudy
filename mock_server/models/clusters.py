@@ -1,4 +1,5 @@
-from flask import Blueprint, Response
+from flask import Blueprint, jsonify, Response
+from httpx import HTTPStatusError
 
 from mock_server.server_state import CONFIG
 from mock_server.services.project_service import ProjectService
@@ -11,6 +12,12 @@ def create_clusters_blueprint():
 
     pro_service = ProjectService()
     contex = Context("", "", {})
+
+    @bp.errorhandler(HTTPStatusError)
+    def handle_status_error(exc: HTTPStatusError):
+        return jsonify({
+            "error": exc.response.text
+        }), exc.response.status_code
 
     @bp.route("/provider/regions", methods=["GET"])
     def tidbcloudy_provider() -> [Response, int]:

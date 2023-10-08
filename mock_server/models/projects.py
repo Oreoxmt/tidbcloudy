@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, Response
+from httpx import HTTPStatusError
 
 from mock_server.server_state import CONFIG
 from mock_server.services.org_service import OrgService
@@ -13,6 +14,12 @@ def create_projects_blueprint():
     org_service = OrgService()
     pro_service = ProjectService()
     contex = Context("", "", {})
+
+    @bp.errorhandler(HTTPStatusError)
+    def handle_status_error(exc: HTTPStatusError):
+        return jsonify({
+            "error": exc.response.text
+        }), exc.response.status_code
 
     @bp.route("", methods=["GET"])
     def tidbcloudy_list_projects() -> [Response, int]:

@@ -142,5 +142,6 @@ class TestBilling:
         current_bill = api.get_monthly_bill(month="202310")
         assert current_bill.overview.billedMonth == "2023-10"
         TestBilling.assert_billing(current_bill)
-        with pytest.raises(TiDBCloudResponseException):
+        with pytest.raises(TiDBCloudResponseException) as exc_info:
             api.get_monthly_bill(month="202308")
+        assert exc_info.value.status == 400
