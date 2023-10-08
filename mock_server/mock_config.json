@@ -117,11 +117,11 @@
         "connection_strings": {
           "default_user": "root",
           "standard": {
-            "host": "tidb.f69f3808.acea1f2a.us-east-1.shared.aws.tidbcloud.com",
+            "host": "tidb.us-east-1.shared.aws.tidbcloud.com",
             "port": 4000
           },
           "vpc_peering": {
-            "host": "private-tidb.f69f3808.acea1f2a.us-east-1.shared.aws.tidbcloud.com",
+            "host": "private-tidb.us-east-1.shared.aws.tidbcloud.com",
             "port": 4000
           }
         }
