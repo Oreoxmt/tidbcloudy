@@ -143,7 +143,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 yield cluster
             page += 1
 
-    def list_clusters(self, page: int = None, page_size: int = None) -> Page[Cluster]:
+    def list_clusters(self, page: int = 1, page_size: int = 10) -> Page[Cluster]:
         """
         List all clusters in the project.
         Args:
