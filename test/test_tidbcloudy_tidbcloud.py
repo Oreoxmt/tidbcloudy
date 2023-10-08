@@ -13,6 +13,8 @@ api = tidbcloudy.TiDBCloud(public_key="", private_key="", server_config=TEST_SER
 
 class TestProject:
     project_init_num = 2
+    page = 1
+    page_size = 1
 
     @staticmethod
     def assert_project_properties(project: Project):
@@ -30,8 +32,8 @@ class TestProject:
     @staticmethod
     def assert_project_1(project: Project):
         TestProject.assert_project_properties(project)
-        assert repr(
-            project) == "<Project id=1 name=default_project aws_cmek_enabled=False create_at=2022-07-05 11:24:08>"
+        assert repr(project) \
+               == "<Project id=1 name=default_project aws_cmek_enabled=False create_at=2022-07-05 11:24:08>"
         assert project.id == "1"
         assert project.org_id == "1"
         assert project.name == "default_project"
@@ -41,33 +43,34 @@ class TestProject:
         assert project.aws_cmek_enabled is False
 
     def test_list_projects_init(self):
-        projects = api.list_projects(page=1, page_size=1)
+        projects = api.list_projects(page=TestProject.page, page_size=TestProject.page_size)
         assert isinstance(projects, Page)
-        assert projects.page == 1
-        assert projects.page_size == 1
+        assert projects.page == TestProject.page
+        assert projects.page_size == TestProject.page_size
         assert projects.total == TestProject.project_init_num
-        assert len(projects.items) == 1
+        assert len(projects.items) == TestProject.page * TestProject.page_size
         for project in projects.items:
             self.assert_project_1(project)
 
     def test_create_project(self):
         project = api.create_project(name="test_project", aws_cmek_enabled=True, update_from_server=True)
         self.assert_project_properties(project)
-        assert repr(
-            project) == (f"<Project id={project.id} name=test_project aws_cmek_enabled=True "
-                         f"create_at={timestamp_to_string(project.create_timestamp)}>")
+        assert repr(project) == \
+               (f"<Project id={project.id} name=test_project aws_cmek_enabled=True "
+                f"create_at={timestamp_to_string(project.create_timestamp)}>")
         assert project.org_id == "1"
         assert project.name == "test_project"
         assert project.cluster_count == 0
         assert project.user_count == 1
         assert project.aws_cmek_enabled is True
-        current_projects = api.list_projects(page=1, page_size=1)
-        assert current_projects.total == TestProject.project_init_num + 1
+        current_projects = api.list_projects(page=TestProject.page, page_size=TestProject.page_size)
+        assert current_projects.total == TestProject.project_init_num + TestProject.page * TestProject.page_size
 
     def test_get_project(self):
-        project = api.get_project(project_id="1", update_from_server=False)
+        project_id = "1"
+        project = api.get_project(project_id=project_id, update_from_server=False)
         assert repr(project) == "<Project id=1 name=None aws_cmek_enabled=None create_at=>"
-        project = api.get_project(project_id="1", update_from_server=True)
+        project = api.get_project(project_id=project_id, update_from_server=True)
         self.assert_project_1(project)
 
     def test_iter_projects(self):
@@ -134,14 +137,20 @@ class TestBilling:
             "totalCost": "4.00"
         }
 
-    def test_get_monthly_bill(self):
-        current_bill = api.get_monthly_bill(month="202309")
-        assert current_bill.overview.billedMonth == "2023-09"
-        current_bill = api.get_monthly_bill(month="2023-10")
-        assert current_bill.overview.billedMonth == "2023-10"
+    def test_get_monthly_bill_properties(self):
         current_bill = api.get_monthly_bill(month="202310")
         assert current_bill.overview.billedMonth == "2023-10"
         TestBilling.assert_billing(current_bill)
+
+    def test_get_monthly_bill_1(self):
+        current_bill = api.get_monthly_bill(month="2023-10")
+        assert current_bill.overview.billedMonth == "2023-10"
+
+    def test_get_monthly_bill_2(self):
+        current_bill = api.get_monthly_bill(month="202309")
+        assert current_bill.overview.billedMonth == "2023-09"
+
+    def test_get_monthly_bill_exc(self):
         with pytest.raises(TiDBCloudResponseException) as exc_info:
             api.get_monthly_bill(month="202308")
         assert exc_info.value.status == 400

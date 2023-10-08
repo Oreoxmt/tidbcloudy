@@ -2,6 +2,7 @@ TEST_SERVER_CONFIG = {
     "v1beta": "http://127.0.0.1:5000/api/v1beta/",
     "billing": "http://127.0.0.1:5000/billing/v1beta1/"
 }
+
 TEST_CLUSTER_CONFIG = {
     "cloud_provider": "AWS",
     "cluster_type": "DEDICATED",
@@ -15,4 +16,5 @@ TEST_CLUSTER_CONFIG = {
         "root_password": "root",
     },
     "name": "test",
-    "region": "us-west-1"}
+    "region": "us-west-1"
+}
