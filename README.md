@@ -72,6 +72,23 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
 </thead>
 <tbody>
   <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.1.0" target="_blank" rel="noopener noreferrer">1.1.0</a></td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
     <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.0.10" target="_blank" rel="noopener noreferrer">1.0.10</a></td>
     <td>✅</td>
     <td>❌</td>
