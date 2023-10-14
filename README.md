@@ -1,5 +1,7 @@
 # Python SDK for TiDB Cloud
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 `tidbcloudy` is an **unofficial** Python SDK for [TiDB Cloud](https://tidbcloud.com). If you encounter any problems or have suggestions, feel free to open an issue on the GitHub repository [Oreoxmt/tidbcloudy](https://github.com/Oreoxmt/tidbcloudy).
 
 ## Table of contents
@@ -71,6 +73,23 @@ You can use this SDK to access [TiDB Cloud](https://tidbcloud.com) and manage yo
   </tr>
 </thead>
 <tbody>
+  <tr>
+    <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.1.1" target="_blank" rel="noopener noreferrer">1.1.1</a></td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
   <tr>
     <td><a href="https://github.com/Oreoxmt/tidbcloudy/releases/tag/v1.1.0" target="_blank" rel="noopener noreferrer">1.1.0</a></td>
     <td>✅</td>
