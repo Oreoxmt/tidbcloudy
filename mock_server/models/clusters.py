@@ -15,17 +15,13 @@ def create_clusters_blueprint():
 
     @bp.errorhandler(HTTPStatusError)
     def handle_status_error(exc: HTTPStatusError):
-        return jsonify({
-            "error": exc.response.text
-        }), exc.response.status_code
+        return jsonify({"error": exc.response.text}), exc.response.status_code
 
     @bp.route("/provider/regions", methods=["GET"])
     def tidbcloudy_provider() -> [Response, int]:
         provider_regions = [CloudSpecification.from_object(contex, item) for item in CONFIG["provider_regions"]]
         provider_regions_obj = pro_service.list_provider_regions(provider_regions)
-        resp = {
-            "items": [item.to_object() for item in provider_regions_obj]
-        }
+        resp = {"items": [item.to_object() for item in provider_regions_obj]}
         return resp, 200
 
     return bp

@@ -9,18 +9,9 @@ from tidbcloudy.context import Context
 from tidbcloudy.specification import CloudSpecification, ClusterStatus, TiDBComponent, TiFlashComponent, TiKVComponent
 
 VALID_COMPONENTS = {
-    "tidb": {
-        "class": TiDBComponent,
-        "attributes": {"node_size", "node_quantity"}
-    },
-    "tikv": {
-        "class": TiKVComponent,
-        "attributes": {"node_size", "node_quantity", "storage_size_gib"}
-    },
-    "tiflash": {
-        "class": TiFlashComponent,
-        "attributes": {"node_size", "node_quantity", "storage_size_gib"}
-    }
+    "tidb": {"class": TiDBComponent, "attributes": {"node_size", "node_quantity"}},
+    "tikv": {"class": TiKVComponent, "attributes": {"node_size", "node_quantity", "storage_size_gib"}},
+    "tiflash": {"class": TiFlashComponent, "attributes": {"node_size", "node_quantity", "storage_size_gib"}},
 }
 
 
@@ -52,9 +43,9 @@ class ProjectService:
     def create_project_aws_cmek(projects: List[dict], project_id: str, body: dict) -> None:
         project_index = ProjectService._get_project_index_by_id(projects, project_id)
         if project_index is None or projects[project_index].get("aws_cmek_enabled") is False:
-            raise HTTPStatusError("",
-                                  request=Request("POST", ""),
-                                  response=Response(400, text="aws cmek is not enabled"))
+            raise HTTPStatusError(
+                "", request=Request("POST", ""), response=Response(400, text="aws cmek is not enabled")
+            )
         project_cmek = projects[project_index].get("aws_cmek", [])
         for create_cmek in body.get("specs", []):
             current_cmek = {
@@ -74,12 +65,12 @@ class ProjectService:
         for cluster in clusters:
             if cluster.project_id == project_id:
                 current_clusters.append(cluster)
-        return_clusters = current_clusters[page_size * (page - 1): page_size * page]
+        return_clusters = current_clusters[page_size * (page - 1) : page_size * page]
         total = len(current_clusters)
         return return_clusters, total
 
     def create_cluster(self, project_id: str, body: dict) -> Cluster:
-        body["id"] = str(uuid.uuid4().int % (10 ** 19))
+        body["id"] = str(uuid.uuid4().int % (10**19))
         body["project_id"] = project_id
         body["create_timestamp"] = str(int(datetime.now().timestamp()))
         body["status"] = {
@@ -87,15 +78,9 @@ class ProjectService:
             "cluster_status": ClusterStatus.AVAILABLE.value,
             "connection_strings": {
                 "default_user": "root",
-                "standard": {
-                    "host": "gateway01.prod.aws.tidbcloud.com",
-                    "port": 4000
-                },
-                "vpc_peering": {
-                    "host": "gateway01-privatelink.prod.aws.tidbcloud.com",
-                    "port": 4000
-                }
-            }
+                "standard": {"host": "gateway01.prod.aws.tidbcloud.com", "port": 4000},
+                "vpc_peering": {"host": "gateway01-privatelink.prod.aws.tidbcloud.com", "port": 4000},
+            },
         }
         if body["config"].get("port") is None:
             body["config"]["port"] = 4000
@@ -107,9 +92,9 @@ class ProjectService:
         for cluster in clusters:
             if cluster.project_id == project_id and cluster.id == cluster_id:
                 return cluster
-        raise HTTPStatusError("",
-                              request=Request("GET", ""),
-                              response=Response(400, text=f"Cluster {cluster_id} not found"))
+        raise HTTPStatusError(
+            "", request=Request("GET", ""), response=Response(400, text=f"Cluster {cluster_id} not found")
+        )
 
     def delete_cluster(self, clusters: List[Cluster], project_id: str, cluster_id: str) -> List[Cluster]:
         delete_cluster = self.get_cluster(clusters, project_id, cluster_id)
@@ -119,9 +104,11 @@ class ProjectService:
     @staticmethod
     def _get_component(cluster: Cluster, component_name: str):
         if component_name not in VALID_COMPONENTS:
-            raise HTTPStatusError("",
-                                  request=Request("GET", ""),
-                                  response=Response(400, text=f"Component {component_name} is not supported"))
+            raise HTTPStatusError(
+                "",
+                request=Request("GET", ""),
+                response=Response(400, text=f"Component {component_name} is not supported"),
+            )
         component = getattr(cluster.config.components, component_name)
         if component is None:
             init_component = VALID_COMPONENTS[component_name]["class"]
@@ -135,26 +122,29 @@ class ProjectService:
             valid_attrs = VALID_COMPONENTS.get(component, {}).get("attributes", set())
             for attribute, value in config.items():
                 if attribute not in valid_attrs:
-                    raise HTTPStatusError("",
-                                          request=Request("POST", ""),
-                                          response=Response(400, text=f"Aattribute {attribute} is not supported"))
+                    raise HTTPStatusError(
+                        "",
+                        request=Request("POST", ""),
+                        response=Response(400, text=f"Attribute {attribute} is not supported"),
+                    )
                 setattr(ProjectService._get_component(cluster, component), attribute, value)
         return cluster
 
     @staticmethod
     def _pause_resume_cluster(cluster: Cluster, config) -> Cluster:
         if not isinstance(config, bool):
-            raise HTTPStatusError("",
-                                  request=Request("POST", ""),
-                                  response=Response(400, text="The paused config must be a boolean"))
+            raise HTTPStatusError(
+                "", request=Request("POST", ""), response=Response(400, text="The paused config must be a boolean")
+            )
         current_status = cluster.status.cluster_status
         if config and current_status == ClusterStatus.AVAILABLE:
             cluster.status.cluster_status = ClusterStatus.PAUSED
         elif not config and current_status == ClusterStatus.PAUSED:
             cluster.status.cluster_status = ClusterStatus.AVAILABLE
         else:
-            raise HTTPStatusError("", request=Request("POST", ""),
-                                  response=Response(400, text="The cluster cannot be paused or resumed"))
+            raise HTTPStatusError(
+                "", request=Request("POST", ""), response=Response(400, text="The cluster cannot be paused or resumed")
+            )
         return cluster
 
     def update_cluster(self, clusters: List[Cluster], project_id: str, cluster_id: str, body: dict) -> List[Cluster]:

@@ -4,7 +4,6 @@ from tidbcloudy.exception import TiDBCloudResponseException
 
 
 class Context:
-
     def __init__(self, public_key: str, private_key: str, server_config: dict):
         """
         Args:
@@ -25,28 +24,21 @@ class Context:
             resp.raise_for_status()
             return resp.json()
         except httpx.RequestError as exc:
-            raise TiDBCloudResponseException(status="Error",
-                                             message=f"An error occurred when requesting {exc.request.url}")
+            raise TiDBCloudResponseException(
+                status="Error", message=f"An error occurred when requesting {exc.request.url}"
+            )
         except httpx.HTTPStatusError as exc:
             raise TiDBCloudResponseException(status=exc.response.status_code, message=exc.response.text)
 
-    def call_get(self, server: str, path: str,
-                 *,
-                 params: dict = None) -> dict:
+    def call_get(self, server: str, path: str, *, params: dict = None) -> dict:
         resp = self._call_api(method="GET", path=path, server=server, params=params)
         return resp
 
-    def call_post(self, server: str, path: str,
-                  *,
-                  data: dict = None,
-                  json: dict = None) -> dict:
+    def call_post(self, server: str, path: str, *, data: dict = None, json: dict = None) -> dict:
         resp = self._call_api(method="POST", path=path, server=server, data=data, json=json)
         return resp
 
-    def call_patch(self, server: str, path: str,
-                   *,
-                   data: dict = None,
-                   json: dict = None) -> dict:
+    def call_patch(self, server: str, path: str, *, data: dict = None, json: dict = None) -> dict:
         resp = self._call_api(method="PATCH", path=path, server=server, data=data, json=json)
         return resp
 

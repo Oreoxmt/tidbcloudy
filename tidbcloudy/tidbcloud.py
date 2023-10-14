@@ -8,7 +8,7 @@ from tidbcloudy.util.timestamp import get_current_year_month
 
 SERVER_CONFIG_DEFAULT = {
     "v1beta": "https://api.tidbcloud.com/api/v1beta/",
-    "billing": "https://billing.tidbapi.com/v1beta1/"
+    "billing": "https://billing.tidbapi.com/v1beta1/",
 }
 
 
@@ -37,10 +37,7 @@ class TiDBCloud:
                 project = api.create_project(name="your_project_name", aws_cmek_enabled=False, update_from_server=True)
                 print(project)
         """
-        config = {
-            "name": name,
-            "aws_cmek_enabled": aws_cmek_enabled
-        }
+        config = {"name": name, "aws_cmek_enabled": aws_cmek_enabled}
         resp = self._context.call_post(server="v1beta", path="projects", json=config)
         project_id = resp["id"]
         if update_from_server:
@@ -99,8 +96,8 @@ class TiDBCloud:
             query["page_size"] = page_size
         resp = self._context.call_get(server="v1beta", path="projects", params=query)
         return Page(
-            [Project.from_object(self._context, item) for item in resp["items"]],
-            page, page_size, resp["total"])
+            [Project.from_object(self._context, item) for item in resp["items"]], page, page_size, resp["total"]
+        )
 
     def iter_projects(self, page_size: int = 10) -> Iterator[Project]:
         """

@@ -32,8 +32,9 @@ class TestProject:
     @staticmethod
     def assert_project_1(project: Project):
         TestProject.assert_project_properties(project)
-        assert repr(project) \
-               == "<Project id=1 name=default_project aws_cmek_enabled=False create_at=2022-07-05 11:24:08>"
+        assert (
+            repr(project) == "<Project id=1 name=default_project aws_cmek_enabled=False create_at=2022-07-05 11:24:08>"
+        )
         assert project.id == "1"
         assert project.org_id == "1"
         assert project.name == "default_project"
@@ -55,9 +56,10 @@ class TestProject:
     def test_create_project(self):
         project = api.create_project(name="test_project", aws_cmek_enabled=True, update_from_server=True)
         self.assert_project_properties(project)
-        assert repr(project) == \
-               (f"<Project id={project.id} name=test_project aws_cmek_enabled=True "
-                f"create_at={timestamp_to_string(project.create_timestamp)}>")
+        assert repr(project) == (
+            f"<Project id={project.id} name=test_project aws_cmek_enabled=True "
+            f"create_at={timestamp_to_string(project.create_timestamp)}>"
+        )
         assert project.org_id == "1"
         assert project.name == "test_project"
         assert project.cluster_count == 0
@@ -110,31 +112,29 @@ class TestBilling:
             "credits": "1.00",
             "discounts": "2.00",
             "runningTotal": "3.00",
-            "totalCost": "4.00"
+            "totalCost": "4.00",
         }
         assert billing.summaryByProject.otherCharges[0].to_object() == {
             "chargeName": "Support Plan",
             "credits": "0.10",
             "discounts": "0.20",
             "runningTotal": "0.30",
-            "totalCost": "0.40"
+            "totalCost": "0.40",
         }
         assert billing.summaryByProject.projects[0].to_object() == {
             "credits": "3.00",
             "discounts": "0.50",
             "projectName": "prod-project",
             "runningTotal": "1.00",
-            "totalCost": "4.00"
+            "totalCost": "4.00",
         }
         assert billing.summaryByService[0].to_object() == {
             "credits": "2.00",
             "discounts": "3.00",
             "runningTotal": "5.00",
-            "serviceCosts": [
-                {}
-            ],
+            "serviceCosts": [{}],
             "serviceName": "TiDB Dedicated",
-            "totalCost": "4.00"
+            "totalCost": "4.00",
         }
 
     def test_get_monthly_bill_properties(self):

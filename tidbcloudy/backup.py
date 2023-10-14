@@ -5,8 +5,17 @@ from .util.log import log
 
 # noinspection PyShadowingBuiltins
 class Backup(TiDBCloudyBase, TiDBCloudyContextualBase):
-    __slots__ = ["_id", "_cluster_id", "_project_id", "_name", "_description", "_type", "_create_timestamp", "_size",
-                 "_status"]
+    __slots__ = [
+        "_id",
+        "_cluster_id",
+        "_project_id",
+        "_name",
+        "_description",
+        "_type",
+        "_create_timestamp",
+        "_size",
+        "_status",
+    ]
 
     id: str = TiDBCloudyField(str)
     cluster_id: str = TiDBCloudyField(str)

@@ -169,9 +169,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         if page_size is not None:
             query["page_size"] = page_size
         resp = self.context.call_get(server="v1beta", path=path, params=query)
-        return Page(
-            [Cluster.from_object(self.context, item) for item in resp["items"]],
-            page, page_size, resp["total"])
+        return Page([Cluster.from_object(self.context, item) for item in resp["items"]], page, page_size, resp["total"])
 
     def create_restore(self, *, name: str, backup_id: str, cluster_config: Union[CreateClusterConfig, dict]) -> Restore:
         """
@@ -187,11 +185,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         path = "projects/{}/restores".format(self.id)
         if isinstance(cluster_config, CreateClusterConfig):
             cluster_config = cluster_config.to_object()
-        create_config = {
-            "name": name,
-            "backup_id": backup_id,
-            "config": cluster_config["config"]
-        }
+        create_config = {"name": name, "backup_id": backup_id, "config": cluster_config["config"]}
         resp = self.context.call_post(server="v1beta", path=path, json=create_config)
         return Restore(context=self.context, id=resp["id"], cluster_id=resp["cluster_id"])
 
@@ -225,10 +219,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         if page_size is not None:
             query["page_size"] = page_size
         resp = self.context.call_get(server="v1beta", path=path, params=query)
-        return Page(
-            [Restore.from_object(self.context, item) for item in resp["items"]],
-            page, page_size, resp["total"]
-        )
+        return Page([Restore.from_object(self.context, item) for item in resp["items"]], page, page_size, resp["total"])
 
     def iter_restores(self, page_size: int = 10) -> Iterator[Restore]:
         """
@@ -264,14 +255,9 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
                 for cmek in project.iter_aws_cmek():
                     print(cmek)
         """
-        payload = {
-            "specs": []
-        }
+        payload = {"specs": []}
         for region, kms_arn in config:
-            payload["specs"].append({
-                "region": region,
-                "kms_arn": kms_arn
-            })
+            payload["specs"].append({"region": region, "kms_arn": kms_arn})
         path = f"projects/{self.id}/aws-cmek"
         self.context.call_post(server="v1beta", path=path, json=payload)
 
@@ -294,9 +280,7 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
         path = f"projects/{self.id}/aws-cmek"
         resp = self.context.call_get(server="v1beta", path=path)
         total = len(resp["items"])
-        return Page(
-            [ProjectAWSCMEK.from_object(self.context, item) for item in resp["items"]],
-            1, total, total)
+        return Page([ProjectAWSCMEK.from_object(self.context, item) for item in resp["items"]], 1, total, total)
 
     def iter_aws_cmek(self) -> Iterator[ProjectAWSCMEK]:
         """
@@ -320,4 +304,5 @@ class Project(TiDBCloudyBase, TiDBCloudyContextualBase):
 
     def __repr__(self):
         return "<Project id={} name={} aws_cmek_enabled={} create_at={}>".format(
-            self.id, self.name, self.aws_cmek_enabled, timestamp_to_string(self.create_timestamp))
+            self.id, self.name, self.aws_cmek_enabled, timestamp_to_string(self.create_timestamp)
+        )
