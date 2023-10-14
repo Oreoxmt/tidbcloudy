@@ -1,3 +1,5 @@
+import ipaddress
+
 import pytest
 
 import tidbcloudy
@@ -176,6 +178,10 @@ class TestCluster:
         assert cluster.config.port == cluster.status.connection_strings.standard.port \
                == cluster.status.connection_strings.vpc_peering.port == 4000
         assert cluster.status.tidb_version == "v0.0.0"
+        assert len(cluster.config.ip_access_list) == 3
+        assert cluster.config.ip_access_list[0].cidr == "0.0.0.0/0"
+        auto_ip = cluster.config.ip_access_list[2].cidr
+        assert (ipaddress.ip_network(auto_ip) or ipaddress.ip_address(auto_ip)) is True
         assert repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} " \
                                 f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
         assert project.get_cluster(cluster_id=cluster.id).to_object() == cluster.to_object()
