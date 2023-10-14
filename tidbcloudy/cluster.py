@@ -1,8 +1,8 @@
 import time
 from typing import Iterator, Union
 
-import deprecation
 import MySQLdb
+import deprecation
 
 from ._base import TiDBCloudyBase, TiDBCloudyContextualBase, TiDBCloudyField
 from .backup import Backup
@@ -14,8 +14,17 @@ from .util.timestamp import timestamp_to_string
 
 # noinspection PyShadowingBuiltins
 class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
-    __slots__ = ["_id", "_project_id", "_name", "_cluster_type", "_cloud_provider", "_region", "_create_timestamp",
-                 "_config", "_status"]
+    __slots__ = [
+        "_id",
+        "_project_id",
+        "_name",
+        "_cluster_type",
+        "_cloud_provider",
+        "_region",
+        "_create_timestamp",
+        "_config",
+        "_status",
+    ]
 
     id: str = TiDBCloudyField(str)
     project_id: str = TiDBCloudyField(str)
@@ -170,8 +179,14 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
             query["page_size"] = page_size
         resp = self.context.call_get(server="v1beta", path=path, params=query)
         return Page(
-            [Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup}) for
-             backup in resp["items"]], page, page_size, resp["total"])
+            [
+                Backup.from_object(self.context, {"cluster_id": self.id, "project_id": self.project_id, **backup})
+                for backup in resp["items"]
+            ],
+            page,
+            page_size,
+            resp["total"],
+        )
 
     def get_backup(self, backup_id: str) -> Backup:
         """
@@ -193,8 +208,13 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         if connection_strings is None:
             raise ValueError("No connection strings found for type {}".format(type))
         connection_string = connection_strings[type]
-        return MySQLdb.connect(host=connection_string["host"], port=connection_string["port"], user=user,
-                               password=password, database=database)
+        return MySQLdb.connect(
+            host=connection_string["host"],
+            port=connection_string["port"],
+            user=user,
+            password=password,
+            database=database,
+        )
 
     def __repr__(self):
         base_repr = f"<Cluster id={self.id}"
@@ -205,5 +225,7 @@ class Cluster(TiDBCloudyBase, TiDBCloudyContextualBase):
         elif self.cluster_type is None:
             return f"{base_repr} name={self.name}>"
         else:
-            return (f"{base_repr} name={self.name} type={self.cluster_type.value}"
-                    f" create_at={timestamp_to_string(self.create_timestamp)}>")
+            return (
+                f"{base_repr} name={self.name} type={self.cluster_type.value}"
+                f" create_at={timestamp_to_string(self.create_timestamp)}>"
+            )

@@ -15,9 +15,7 @@ def create_billing_blueprint():
 
     @bp.errorhandler(HTTPStatusError)
     def handle_status_error(exc: HTTPStatusError):
-        return jsonify({
-            "error": exc.response.text
-        }), exc.response.status_code
+        return jsonify({"error": exc.response.text}), exc.response.status_code
 
     @bp.route("<string:month>", methods=["GET"])
     def tidbcloudy_get_monthly_bill(month: str) -> [Response, int]:

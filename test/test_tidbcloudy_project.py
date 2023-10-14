@@ -1,3 +1,5 @@
+import ipaddress
+
 import pytest
 
 import tidbcloudy
@@ -41,8 +43,8 @@ class TestAWSCMEK:
 
     def test_create_aws_cmek(self):
         project.create_aws_cmek(
-            [("us-east-1", "arn:aws:kms:us-east-1:123456789"),
-             ("us-west-2", "arn:aws:kms:us-west-2:123456789")])
+            [("us-east-1", "arn:aws:kms:us-east-1:123456789"), ("us-west-2", "arn:aws:kms:us-west-2:123456789")]
+        )
         cmeks = project.list_aws_cmek()
         assert isinstance(cmeks, Page)
         assert cmeks.page == 1
@@ -83,7 +85,7 @@ class TestCluster:
             "node_size": "8C16G",
             "vcpu_num": 8,
             "ram_bytes": "17179869184",
-            "status": "NODE_STATUS_AVAILABLE"
+            "status": "NODE_STATUS_AVAILABLE",
         }
         assert cluster.status.node_map.tiflash[0].to_object() == {
             "node_name": "tiflash-0",
@@ -92,30 +94,49 @@ class TestCluster:
             "vcpu_num": 8,
             "ram_bytes": "68719476736",
             "storage_size_gib": 1024,
-            "status": "NODE_STATUS_AVAILABLE"
+            "status": "NODE_STATUS_AVAILABLE",
         }
         assert cluster.status.connection_strings.default_user == "root"
         assert cluster.status.connection_strings.standard.host == "tidb.test.us-east-1.shared.aws.tidbcloud.com"
-        assert cluster.status.connection_strings.standard.port == cluster.status.connection_strings.vpc_peering.port \
-               == 4000
-        assert cluster.status.connection_strings.vpc_peering.host \
-               == "private-tidb.test.us-east-1.shared.aws.tidbcloud.com"
-        assert repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} " \
-                                f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
+        assert (
+            cluster.status.connection_strings.standard.port
+            == cluster.status.connection_strings.vpc_peering.port
+            == 4000
+        )
+        assert (
+            cluster.status.connection_strings.vpc_peering.host == "private-tidb.test.us-east-1.shared.aws.tidbcloud.com"
+        )
+        assert (
+            repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} "
+            f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
+        )
 
     @staticmethod
     def assert_cluster_developer_properties(cluster: Cluster):
         assert cluster.id == "3456"
         assert cluster.name == "serverless-0"
         assert cluster.create_timestamp == 1606472018
-        assert cluster.config.port == cluster.status.connection_strings.standard.port \
-               == cluster.status.connection_strings.vpc_peering.port == 4000
-        assert cluster.config.components.tidb.node_size == cluster.config.components.tikv.node_size \
-               == cluster.config.components.tiflash.node_size == "Shared0"
-        assert cluster.config.components.tidb.node_quantity == cluster.config.components.tikv.node_quantity \
-               == cluster.config.components.tiflash.node_quantity == 1
-        assert cluster.config.components.tikv.storage_size_gib \
-               == cluster.config.components.tiflash.storage_size_gib == 0
+        assert (
+            cluster.config.port
+            == cluster.status.connection_strings.standard.port
+            == cluster.status.connection_strings.vpc_peering.port
+            == 4000
+        )
+        assert (
+            cluster.config.components.tidb.node_size
+            == cluster.config.components.tikv.node_size
+            == cluster.config.components.tiflash.node_size
+            == "Shared0"
+        )
+        assert (
+            cluster.config.components.tidb.node_quantity
+            == cluster.config.components.tikv.node_quantity
+            == cluster.config.components.tiflash.node_quantity
+            == 1
+        )
+        assert (
+            cluster.config.components.tikv.storage_size_gib == cluster.config.components.tiflash.storage_size_gib == 0
+        )
         assert cluster.status.tidb_version == "v7.1.0"
         assert cluster.status.cluster_status.value == "AVAILABLE"
         assert cluster.status.node_map.tidb == cluster.status.node_map.tikv == cluster.status.node_map.tiflash == []
@@ -155,15 +176,16 @@ class TestCluster:
         TestCluster.assert_cluster_dedicated_properties(cluster)
 
     def test_create_cluster(self):
-        config = CreateClusterConfig()
-        config \
-            .set_name("test-serverless") \
-            .set_cluster_type("DEVELOPER") \
-            .set_cloud_provider("aws") \
-            .set_region("us-west-2") \
-            .set_root_password("password") \
-            .add_ip_access(cidr="0.0.0.0/0") \
+        config = (
+            CreateClusterConfig()
+            .set_name("test-serverless")
+            .set_cluster_type("DEVELOPER")
+            .set_cloud_provider("aws")
+            .set_region("us-west-2")
+            .set_root_password("password")
+            .add_ip_access(cidr="0.0.0.0/0")
             .add_ip_access(cidr="1.1.1.1/1")
+        )
         cluster = project.create_cluster(config=config)
         assert isinstance(cluster, Cluster)
         assert repr(cluster) == f"<Cluster id={cluster.id} Unknown status>"
@@ -173,11 +195,21 @@ class TestCluster:
         assert cluster.cluster_type.value == "DEVELOPER"
         assert cluster.cloud_provider.value == "AWS"
         assert cluster.region == "us-west-2"
-        assert cluster.config.port == cluster.status.connection_strings.standard.port \
-               == cluster.status.connection_strings.vpc_peering.port == 4000
+        assert (
+            cluster.config.port
+            == cluster.status.connection_strings.standard.port
+            == cluster.status.connection_strings.vpc_peering.port
+            == 4000
+        )
         assert cluster.status.tidb_version == "v0.0.0"
-        assert repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} " \
-                                f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
+        assert len(cluster.config.ip_access_list) == 3
+        assert cluster.config.ip_access_list[0].cidr == "0.0.0.0/0"
+        auto_ip = cluster.config.ip_access_list[2].cidr
+        assert (ipaddress.ip_network(auto_ip) or ipaddress.ip_address(auto_ip)) is True
+        assert (
+            repr(cluster) == f"<Cluster id={cluster.id} name={cluster.name} type={cluster.cluster_type.value} "
+            f"create_at={timestamp_to_string(cluster.create_timestamp)}>"
+        )
         assert project.get_cluster(cluster_id=cluster.id).to_object() == cluster.to_object()
 
     def test_delete_cluster(self):
@@ -236,10 +268,12 @@ class TestCluster:
         assert cluster.config.components.tiflash.node_size == "8C64G"
         assert cluster.config.components.tiflash.storage_size_gib == 500
         with pytest.raises(TiDBCloudResponseException) as exc_info:
-            project.update_cluster(cluster_id=cluster_id,
-                                   config={"config": {"components": {"pd": {"node_quantity": 1}}}})
+            project.update_cluster(
+                cluster_id=cluster_id, config={"config": {"components": {"pd": {"node_quantity": 1}}}}
+            )
         assert exc_info.value.status == 400
         with pytest.raises(TiDBCloudResponseException) as exc_info:
-            project.update_cluster(cluster_id=cluster_id,
-                                   config={"config": {"components": {"tidb": {"storage_size_gib": 100}}}})
+            project.update_cluster(
+                cluster_id=cluster_id, config={"config": {"components": {"tidb": {"storage_size_gib": 100}}}}
+            )
         assert exc_info.value.status == 400

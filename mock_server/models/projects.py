@@ -18,9 +18,7 @@ def create_projects_blueprint():
 
     @bp.errorhandler(HTTPStatusError)
     def handle_status_error(exc: HTTPStatusError):
-        return jsonify({
-            "error": exc.response.text
-        }), exc.response.status_code
+        return jsonify({"error": exc.response.text}), exc.response.status_code
 
     @bp.route("", methods=["GET"])
     def tidbcloudy_list_projects() -> [Response, int]:
@@ -28,28 +26,21 @@ def create_projects_blueprint():
         page = request.args.get("page", default=1, type=int)
         page_size = request.args.get("page_size", default=10, type=int)
         return_projects = org_service.list_projects(projects, page, page_size)
-        resp = jsonify({
-            "items": [item.to_object() for item in return_projects],
-            "total": len(projects)
-        })
+        resp = jsonify({"items": [item.to_object() for item in return_projects], "total": len(projects)})
         return resp, 200
 
     @bp.route("", methods=["POST"])
     def tidbcloudy_create_project() -> [Response, int]:
         new_project = org_service.create_project(request.json)
         CONFIG["projects"].append(new_project.to_object())
-        resp = jsonify({
-            "id": new_project.id
-        })
+        resp = jsonify({"id": new_project.id})
         return resp, 200
 
     @bp.route("/<string:project_id>/aws-cmek", methods=["GET"])
     def tidbcloudy_list_project_aws_cmeks(project_id) -> [Response, int]:
         projects = CONFIG["projects"]
         project_cmeks = pro_service.list_project_aws_cmeks(projects, project_id)
-        resp = jsonify({
-            "items": project_cmeks
-        })
+        resp = jsonify({"items": project_cmeks})
         return resp, 200
 
     @bp.route("/<string:project_id>/aws-cmek", methods=["POST"])
@@ -65,21 +56,14 @@ def create_projects_blueprint():
         page = request.args.get("page", default=1, type=int)
         page_size = request.args.get("page_size", default=10, type=int)
         return_clusters, total = pro_service.list_clusters(clusters, project_id, page, page_size)
-        resp = jsonify(
-            {
-                "items": [item.to_object() for item in return_clusters],
-                "total": total
-            }
-        )
+        resp = jsonify({"items": [item.to_object() for item in return_clusters], "total": total})
         return resp, 200
 
     @bp.route("/<string:project_id>/clusters", methods=["POST"])
     def tidbcloudy_create_cluster(project_id) -> [Response, int]:
         new_cluster = pro_service.create_cluster(project_id, request.json)
         CONFIG["clusters"].append(new_cluster.to_object())
-        resp = jsonify({
-            "id": new_cluster.id
-        })
+        resp = jsonify({"id": new_cluster.id})
         return resp, 200
 
     @bp.route("/<string:project_id>/clusters/<string:cluster_id>", methods=["GET"])

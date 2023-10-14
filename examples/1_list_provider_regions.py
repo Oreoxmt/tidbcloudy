@@ -14,15 +14,19 @@ for spec in api.list_provider_regions():
     print(f"  region: {spec.region}")
     print(f"  components:")
     for tidb in spec.tidb:
-        print(f"  - tidb: {tidb.node_size}; "
-              f"min={tidb.node_quantity_range.min} step={tidb.node_quantity_range.step}")
+        print(
+            f"  - tidb: {tidb.node_size}; " f"min={tidb.node_quantity_range.min} step={tidb.node_quantity_range.step}"
+        )
     for tikv in spec.tikv:
-        print(f"  - tikv: {tikv.node_size}; "
-              f"min={tikv.node_quantity_range.min} "
-              f"step={tikv.node_quantity_range.step}; "
-              f"{tikv.storage_size_gib_range.min}..{tikv.storage_size_gib_range.max} GiB")
+        print(
+            f"  - tikv: {tikv.node_size}; "
+            f"min={tikv.node_quantity_range.min} "
+            f"step={tikv.node_quantity_range.step}; "
+            f"{tikv.storage_size_gib_range.min}..{tikv.storage_size_gib_range.max} GiB"
+        )
     for tiflash in spec.tiflash:
         print(
             f"  - tiflash: {tiflash.node_size}; "
             f"min={tiflash.node_quantity_range.min} step={tiflash.node_quantity_range.step}; "
-            f"{tiflash.storage_size_gib_range.min}..{tiflash.storage_size_gib_range.max} GiB")
+            f"{tiflash.storage_size_gib_range.min}..{tiflash.storage_size_gib_range.max} GiB"
+        )

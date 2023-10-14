@@ -17,9 +17,7 @@ def load_config(filename: str = "mock_config.json") -> Dict[str, Any]:
         with open(f"{os.path.dirname(__file__)}/{filename}", "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
-        raise FileNotFoundError(
-            f"Configuration file '{filename}' not found in '{os.path.dirname(__file__)}'."
-        )
+        raise FileNotFoundError(f"Configuration file '{filename}' not found in '{os.path.dirname(__file__)}'.")
     except json.JSONDecodeError:
         raise ValueError(f"Fail to decode {filename}")
 
